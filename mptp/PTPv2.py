@@ -52,6 +52,7 @@ class PTPv2(Packet):
     }
     
     TIME_SOURCE = {
+        0x00: "Unknown",
         0x10: "AtomicClock",
         0x20: "GPS",
         0x22: "TerrestrialRadio",

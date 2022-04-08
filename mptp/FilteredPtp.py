@@ -2,6 +2,7 @@ from .PTPv2 import PTPv2, PtpType
 from .PtpTiming import PtpTiming, MsgInterval
 from .PtpMatched import PtpMatched
 from .PtpSequenceId import PtpSequenceId
+from .PtpAnnounceSignal import PtpAnnounceSignal
 import time
 
 class FilteredPtp:
@@ -17,16 +18,11 @@ class FilteredPtp:
         self._delay_resp = []
         self._delay_resp_fup = []
         self._other_ptp_msgs = []
-        if len(packets) > 0:
-            self.time_offset = packets[0].time
-            self.pcap_start_date = time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(packets[0].time))
-            self._logger.info(f'Pcap started at {self.pcap_start_date}')
-        else:
-            self._logger.info(f'Provided packets empty!')
-            return
         self._add(packets)
 
     def analyse(self):
+        announce_sig = PtpAnnounceSignal(self._logger, self.time_offset)
+        announce_sig.check_announce_consistency(self.announce)
         seq_check = PtpSequenceId(self._logger, self.time_offset)
         seq_check.check_sync_followup_sequence(self.sync, self.follow_up)
         seq_check.check_delay_req_resp_sequence(self.delay_req, self.delay_resp)
@@ -38,6 +34,13 @@ class FilteredPtp:
         self._logger.info(self.__repr__())
     
     def _add(self, pkt):
+        if len(pkt) > 0:
+            self.time_offset = pkt[0].time
+            self.pcap_start_date = time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(pkt[0].time))
+            self._logger.info(f'Pcap started at {self.pcap_start_date}')
+        else:
+            self._logger.info(f'Provided packets empty!')
+            return
         if type(pkt) == PTPv2:
             self._add_dispatch(pkt)
         elif iter(pkt):
