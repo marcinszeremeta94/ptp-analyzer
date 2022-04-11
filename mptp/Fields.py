@@ -1,5 +1,5 @@
-import struct
 from scapy.fields import XStrFixedLenField, BitField
+import struct
 
 
 class TimestampField(BitField):

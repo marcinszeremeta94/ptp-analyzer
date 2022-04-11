@@ -1,16 +1,17 @@
 from dataclasses import dataclass
+
+from mptp.Logger import Logger
 from .PTPv2 import PTPv2, PtpType, PTP_MSG_TYPE
-import time
 
 
 class PtpAnnounceSignal:
 
-    def __init__(self, logger, time_offset=0):
+    def __init__(self, logger: Logger, time_offset=0):
         self.time_offset = time_offset
         self._logger = logger
         self._announce_data = AnnounceData()
 
-    def check_announce_consistency(self, announce=[]):
+    def check_announce_consistency(self, announce):
         if not announce:
             self._logger.info('PTP Announce list empty.')
             return
@@ -18,10 +19,11 @@ class PtpAnnounceSignal:
             self._logger.error('PTP Announce input invalid!')
             return
         self._announce_data = AnnounceData(announce[0])
+        self._logger.banner_large('PTP Announce')
+        self._check_announce_stream_consistency(announce)
         self._logger.info(self.__repr__())
-        self._check_stream_consistency(announce)
 
-    def _check_stream_consistency(self, announce):
+    def _check_announce_stream_consistency(self, announce):
         inconsistent_counter = 0
         for msg in announce:
             if AnnounceData(msg) != self._announce_data:
@@ -29,7 +31,8 @@ class PtpAnnounceSignal:
                 self._logger.warning(f'Announce msg data inconsistent with first announce data')
                 self._logger.msg_timing(msg, self.time_offset)
         if inconsistent_counter > 0:
-            self._logger.warning(f'Number of inconsistencies: {inconsistent_counter}')
+            self._logger.warning(
+                f'Number of inconsistencies: {inconsistent_counter}')
         else:
             self._logger.info(f'PTP Announce stream: [OK]')
 

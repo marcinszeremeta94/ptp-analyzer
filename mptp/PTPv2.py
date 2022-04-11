@@ -130,7 +130,8 @@ class PTPv2(Packet):
         ConditionalField(TimestampField("responseOriginTimestamp", 0),
                          lambda pkt: PtpType.is_delay_resp_followup(pkt)),
         ConditionalField(PortIdentityField("requestingPortIdentity", 0),
-                         lambda pkt: PtpType.is_delay_resp(pkt) or PtpType.is_delay_resp_followup(pkt) or PtpType.is_pdelay_resp(pkt)),
+                         lambda pkt: PtpType.is_delay_resp(pkt) or PtpType.is_delay_resp_followup(pkt) or
+                         PtpType.is_pdelay_resp(pkt)),
     ]
 
 
@@ -140,7 +141,7 @@ bind_layers(Ether, PTPv2, type=0x88F7)
 class PtpType:
 
     @staticmethod
-    def get_ptp_msg_type(ptp_v2: PTPv2):
+    def get_ptp_msg_type(ptp_v2: PTPv2) -> PTP_MSG_TYPE:
         if ptp_v2.messageType == PTP_MSG_TYPE.SYNC_MSG.value:
             return PTP_MSG_TYPE.SYNC_MSG
         elif ptp_v2.messageType == PTP_MSG_TYPE.FOLLOW_UP_MSG.value:
@@ -163,7 +164,7 @@ class PtpType:
             return None
 
     @staticmethod
-    def get_ptp_type_str(ptp_v2: PTPv2):
+    def get_ptp_type_str(ptp_v2: PTPv2) -> str:
         if ptp_v2.messageType == PTP_MSG_TYPE.SYNC_MSG.value:
             return 'Sync'
         elif ptp_v2.messageType == PTP_MSG_TYPE.FOLLOW_UP_MSG.value:
@@ -186,37 +187,37 @@ class PtpType:
             return 'Unknown'
 
     @staticmethod
-    def is_sync(ptpv2):
-        return(ptpv2.messageType == PTP_MSG_TYPE.SYNC_MSG.value)
+    def is_sync(ptpv2: PTPv2) -> bool:
+        return ptpv2.messageType == PTP_MSG_TYPE.SYNC_MSG.value
 
     @staticmethod
-    def is_followup(ptpv2):
-        return(ptpv2.messageType == PTP_MSG_TYPE.FOLLOW_UP_MSG.value)
+    def is_followup(ptpv2: PTPv2) -> bool:
+        return ptpv2.messageType == PTP_MSG_TYPE.FOLLOW_UP_MSG.value
 
     @staticmethod
-    def is_delay_req(ptpv2):
-        return(ptpv2.messageType == PTP_MSG_TYPE.DELAY_REQ_MSG.value)
+    def is_delay_req(ptpv2: PTPv2) -> bool:
+        return ptpv2.messageType == PTP_MSG_TYPE.DELAY_REQ_MSG.value
 
     @staticmethod
-    def is_delay_resp(ptpv2):
-        return(ptpv2.messageType == PTP_MSG_TYPE.DELAY_RESP_MSG.value)
+    def is_delay_resp(ptpv2: PTPv2) -> bool:
+        return ptpv2.messageType == PTP_MSG_TYPE.DELAY_RESP_MSG.value
 
     @staticmethod
-    def is_pdelay_req(ptpv2):
-        return(ptpv2.messageType == PTP_MSG_TYPE.PDELAY_REQ_MSG.value)
+    def is_pdelay_req(ptpv2: PTPv2) -> bool:
+        return ptpv2.messageType == PTP_MSG_TYPE.PDELAY_REQ_MSG.value
 
     @staticmethod
-    def is_pdelay_resp(ptpv2):
-        return(ptpv2.messageType == PTP_MSG_TYPE.PDELAY_RESP_MSG.value)
+    def is_pdelay_resp(ptpv2: PTPv2) -> bool:
+        return ptpv2.messageType == PTP_MSG_TYPE.PDELAY_RESP_MSG.value
 
     @staticmethod
-    def is_delay_resp_followup(ptpv2):
-        return(ptpv2.messageType == PTP_MSG_TYPE.PDELAY_RESP_FOLLOW_UP_MSG.value)
+    def is_delay_resp_followup(ptpv2: PTPv2) -> bool:
+        return ptpv2.messageType == PTP_MSG_TYPE.PDELAY_RESP_FOLLOW_UP_MSG.value
 
     @staticmethod
-    def is_announce(ptpv2):
-        return(ptpv2.messageType == PTP_MSG_TYPE.ANNOUNCE_MSG.value)
+    def is_announce(ptpv2: PTPv2) -> bool:
+        return ptpv2.messageType == PTP_MSG_TYPE.ANNOUNCE_MSG.value
 
     @staticmethod
-    def is_signalling(ptpv2):
-        return(ptpv2.messageType == PTP_MSG_TYPE.SIGNALLING_MSG.value)
+    def is_signalling(ptpv2: PTPv2) -> bool:
+        return ptpv2.messageType == PTP_MSG_TYPE.SIGNALLING_MSG.value

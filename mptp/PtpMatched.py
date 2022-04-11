@@ -1,7 +1,6 @@
+from .PTPv2 import PTPv2, PtpType
 from dataclasses import dataclass
 import enum
-from .PTPv2 import PTPv2, PtpType
-from enum import Enum
 import time
 import numpy as np
 import statistics

@@ -1,7 +1,7 @@
 from enum import Enum
 import os
 import time
-import datetime as d
+import datetime as date
 
 
 class LogsSeverity(Enum):
@@ -31,19 +31,19 @@ class Logger:
         banner_large = 7
 
     _log_type_allowed_in_no_logs = ()
-    _log_type_common = (LogType.banner_large, LogType.banner_small,
-                        LogType.msg_timing, LogType.newline)
+    _log_type_common = (LogType.banner_large, LogType.banner_small, LogType.newline)
 
     _log_type_allowed_in_error_only = _log_type_common + (LogType.error,)
     _log_type_allowed_in_info_only = _log_type_common + \
         (LogType.error, LogType.info)
     _log_type_allowed_in_waring_and_errors = _log_type_common + \
-        (LogType.error, LogType.warning,)
+        (LogType.error, LogType.warning, LogType.msg_timing)
     _log_type_allowed_in_regular = _log_type_common + \
-        (LogType.error, LogType.warning, LogType.info)
+        (LogType.error, LogType.warning, LogType.info, LogType.msg_timing)
     _log_type_allowed_in_debug = _log_type_common + \
-        (LogType.error, LogType.warning, LogType.info, LogType.debug)
+        (LogType.error, LogType.warning, LogType.info, LogType.debug, LogType.msg_timing)
 
+    BANNER_LEN = 140
     LOGS_SEPARATOR = '\n'
     INF_PREAMPULE = '[INF] '
     DBG_PREAMPULE = '[DBG] '
@@ -56,64 +56,65 @@ class Logger:
         self.print_options = print_options
         self.val_error_raise = val_error_raise
         self._log_file_name = log_file_name + '.log'
-        self._log_dir_and_name = self._prepare_path()
-        LOGS_TITLE = f'Started at: {d.datetime.now()}'
-        print(f'Log file location: {self._log_dir_and_name}')
-        with open(self._log_dir_and_name, 'w') as self._logFile:
-            self._print_strict(LOGS_TITLE + self.LOGS_SEPARATOR)
-            self._logFile.write(LOGS_TITLE + self.LOGS_SEPARATOR)
+        self.log_dir_and_name = self._prepare_path()
+        LOGS_TITLE = 'PTP ANALYSER'
+        with open(self.log_dir_and_name, 'w') as self._logFile:
+            self.banner_large(LOGS_TITLE)
+            self.info(f'Started at: {date.datetime.now()}')
 
-    def _write_to_log_file(self, in_string):
-        with open(self._log_dir_and_name, 'a') as self._logFile:
+    def _write_to_log_file(self, in_string: str):
+        with open(self.log_dir_and_name, 'a') as self._logFile:
             self._logFile.write(in_string + self.LOGS_SEPARATOR)
 
-    def info(self, in_string):
+    def info(self, in_string: str):
         self._loggerCall(self.LogType.info, in_string)
 
-    def debug(self, in_string):
+    def debug(self, in_string: str):
         self._loggerCall(self.LogType.debug, in_string)
 
-    def warning(self, in_string):
+    def warning(self, in_string: str):
         self._loggerCall(self.LogType.warning, in_string)
 
-    def error(self, in_string):
+    def error(self, in_string: str):
         self._loggerCall(self.LogType.error, in_string)
 
-    def msg_timing(self, msg, time_offset):
+    def msg_timing(self, msg, time_offset=0):
         self._loggerCall(self.LogType.msg_timing,
                          self._get_str_for_timing_log(msg, time_offset))
-    
-    def banner_small(self, in_string):
-        pass
-    
-    def banner_large(self, in_string):
-        pass
-        
-    def new_line(self):
-        self._loggerCall(self.LogType.newline)
 
-    def _loggerCall(self, log_type, in_string=''):
+    def banner_small(self, in_string: str):
+        self._loggerCall(self.LogType.banner_small,
+                         self._prepare_small_banner(in_string.upper()))
+
+    def banner_large(self, in_string: str):
+        self._loggerCall(self.LogType.banner_large,
+                         self._prepare_large_banner(in_string.upper()))
+
+    def new_line(self):
+        self._loggerCall()
+
+    def _loggerCall(self, log_type: LogType = LogType.newline, in_string=''):
         if self._is_in_severity(log_type) and self._is_str(in_string):
             preamble = self._get_log_preamble(log_type)
             log_str = preamble + in_string
             self._write_to_log_file(log_str)
             self._print_strict(log_str)
 
-    def _get_log_preamble(self, logType):
-        if logType == self.LogType.info:
+    def _get_log_preamble(self, log_type: LogType) -> str:
+        if log_type == self.LogType.info:
             return self.INF_PREAMPULE
-        elif logType == self.LogType.debug:
+        elif log_type == self.LogType.debug:
             return self.DBG_PREAMPULE
-        elif logType == self.LogType.warning:
+        elif log_type == self.LogType.warning:
             return self.WRN_PREAMPULE
-        elif logType == self.LogType.error:
+        elif log_type == self.LogType.error:
             return self.ERR_PREAMPULE
-        elif logType == self.LogType.msg_timing:
+        elif log_type == self.LogType.msg_timing:
             return self.TIME_PREAMPULE
         else:
             return ''
 
-    def _is_in_severity(self, log_type):
+    def _is_in_severity(self, log_type: LogsSeverity) -> bool:
         if self.severity == LogsSeverity.NoLogs:
             if log_type in self._log_type_allowed_in_no_logs:
                 return True
@@ -134,7 +135,7 @@ class Logger:
                 return True
         return False
 
-    def _is_str(self, string):
+    def _is_str(self, string) -> bool:
         if isinstance(string, str):
             return True
         else:
@@ -143,7 +144,7 @@ class Logger:
                 raise ValueError
             return False
 
-    def _get_str_for_timing_log(self, msg, time_offset):
+    def _get_str_for_timing_log(self, msg, time_offset) -> str:
         t = time.strftime('%H:%M:%S', time.localtime(msg.time))
         return f'Capture time: {t},\tCapture offset: {msg.time-time_offset:.9f},\tSequence ID: {msg.sequenceId}'
 
@@ -155,9 +156,30 @@ class Logger:
             p = p[:p.rfind('/')] + '/reports/' + self._log_file_name
         return p
 
-    def _print_strict(self, string):
+    def _print_strict(self, string: str):
         if self.print_options == PrintOption.PrintToConsole:
             print(string)
+
+    def _prepare_small_banner(self, in_string: str) -> str:
+        padding_len = self.BANNER_LEN - len(in_string)
+        padding_blank = ''
+        if padding_len % 2 != 0:
+            padding_blank = ' '
+            padding_len -= 1
+        padding_offset = '****'
+        padding_part = int(padding_len / 16)
+        padding_closer = padding_part * ' '
+        padding_further = (7 * padding_part) * '*'
+        return padding_offset + padding_further + padding_closer + padding_blank + in_string + \
+            padding_closer + padding_further + padding_offset
+
+    def _prepare_large_banner(self, in_string: str) -> str:
+        banner_frame_horizontal = self.BANNER_LEN * '='
+        banner_frame_verdical = '||'
+        title_len = self.BANNER_LEN - 2 * len(banner_frame_verdical)
+        banner_title = f'{in_string:^{title_len}}'
+        return banner_frame_horizontal + self.LOGS_SEPARATOR + banner_frame_verdical + banner_title + \
+            banner_frame_verdical + self.LOGS_SEPARATOR + banner_frame_horizontal
 
     def _logger_type_error(self):
         return "{0}{1}: Passed variable is not a string!".format(self.ERR_PREAMPULE, self._logger_type_error.__name__)

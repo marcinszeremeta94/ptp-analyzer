@@ -2,11 +2,11 @@ from scapy.utils import rdpcap
 from .PtpStream import PtpStream
 
 
-def PcapToPtpStream(logger, filename):
+def PcapToPtpStream(logger, filename: str):
     return PtpStream(logger, open_pcap_get_ptp(filename))
 
 
-def open_pcap_get_ptp(filename):
+def open_pcap_get_ptp(filename: str):
     try:
         pcap = rdpcap(filename)
     except FileNotFoundError:

@@ -1,15 +1,18 @@
+from .Logger import Logger
 from .PTPv2 import PTPv2, PtpType
 from .PtpTiming import PtpTiming, MsgInterval
 from .PtpMatched import PtpMatched
 from .PtpSequenceId import PtpSequenceId
 from .PtpAnnounceSignal import PtpAnnounceSignal
+from .PtpPortCheck  import PtpPortCheck
 import time
 
 
 class PtpStream:
 
-    def __init__(self, logger, packets=[]):
+    def __init__(self, logger: Logger, packets):
         self._logger = logger
+        self.time_offset = 0
         self._packets = packets
         self._announce = []
         self._signalling = []
@@ -24,16 +27,25 @@ class PtpStream:
         self._logger.info(self.__repr__())
 
     def analyse(self):
+        if len(self._ptp_msgs_total) == 0:
+            return
         self.analyse_announce()
+        self.analyse_ports()
         self.analyse_sequence_id()
+        self._logger.banner_large('timings')
         self.analyse_timings()
         self.analyse_if_stream_match_sequence_of_sync_dreq_dreq_pattern()
 
     def analyse_announce(self):
         self._announce_sig = PtpAnnounceSignal(self._logger, self.time_offset)
         self._announce_sig.check_announce_consistency(self.announce)
+        
+    def analyse_ports(self):
+        port_check = PtpPortCheck(self._logger, self.time_offset)
+        port_check.check_ports(self._ptp_msgs_total)
 
     def analyse_sequence_id(self):
+        self._logger.banner_large('ptp messages sequence id analysis')
         seq_check = PtpSequenceId(self._logger, self.time_offset)
         seq_check.check_sync_followup_sequence(self.sync, self.follow_up)
         seq_check.check_delay_req_resp_sequence(self.delay_req, self.delay_resp)
@@ -180,8 +192,8 @@ class PtpStream:
             None
 
     def __repr__(self):
-        return f'PTP Filtered Messages:\n\tannounce: {len(self.announce)}, \n\tsync: {len(self.sync)},'\
-            f'\n\tfollow-up: {len(self.follow_up)}, \n\tdelay req: {len(self.delay_req)},'\
-            f'\n\tdelay resp: {len(self.delay_resp)},\n\tdelay resp follow-up: {len(self.delay_resp_fup)}'\
-            f'\n\tsignalling: {len(self.signalling)},\n\tother ptp msgs: {len(self.other_ptp)}'\
-            f'\n\tptp msg total: {len(self.ptp_total)}'
+        return f'PTP Filtered Messages:\n\tAnnounce: {len(self.announce)}, \n\tSync: {len(self.sync)},'\
+            f'\n\tFollow-up: {len(self.follow_up)}, \n\tDelay Request: {len(self.delay_req)},'\
+            f'\n\tDelay Response: {len(self.delay_resp)},\n\tDelay Response Follow-up: {len(self.delay_resp_fup)}'\
+            f'\n\tSignalling: {len(self.signalling)},\n\tOther PTP Messages: {len(self.other_ptp)}'\
+            f'\n\tPTP Messages Total: {len(self.ptp_total)}'
