@@ -1,27 +1,36 @@
 #!/usr/bin/env python3
 import sys
 import re
+import time
 from mptp import PcapTpPtp
-from mptp.Logger import Logger, LogsSeverity 
+from mptp.Logger import Logger, LogsSeverity
 from matplotlib import pyplot as plt
 
-print('Starting PTP pcap Analyser')
-try: 
-    file_name = sys.argv[1]
-except IndexError:
-    file_name = 'ptp_example_ok.pcap'
 
-try: 
-    log_severity = LogsSeverity.Regular if sys.argv[2] == '-v' else LogsSeverity.InfoOnly
-except IndexError:
-    log_severity = LogsSeverity.InfoOnly
+def main():
+    start_time = time.time()
+    print('Starting PTP pcap Analyser\n')
+    try:
+        file_name = sys.argv[1]
+    except IndexError:
+        file_name = 'ptp_example_ok.pcap'
 
-logger = Logger(re.search('[\w-]+\.', file_name).group(0)[:-1], log_severity)
+    try:
+        log_severity = LogsSeverity.Regular if sys.argv[2] == '-v' else LogsSeverity.InfoOnly
+    except IndexError:
+        log_severity = LogsSeverity.InfoOnly
 
-ptp = PcapTpPtp.PtpRatesMsgs(logger, file_name)
-ptp.analyse()
+    logger = Logger(
+        re.search('[\w-]+\.', file_name).group(0)[:-1], log_severity)
 
-#plt.plot(ptp_filtered._sync_timing.msg_rate)
-#plt.show()
+    ptp = PcapTpPtp.PcapToPtpStream(logger, file_name)
+    ptp.analyse()
 
-print("Done!")
+    # plt.plot(ptp_filtered._sync_timing.msg_rate)
+    # plt.show()
+
+    print(f'\nPTP analysis took approx.: {time.time() - start_time:.3f} seconds\nDone!')
+
+
+if __name__ == '__main__':
+    main()

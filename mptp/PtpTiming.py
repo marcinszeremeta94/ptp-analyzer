@@ -5,7 +5,11 @@ import time
 import statistics
 import numpy as np
 
-ERROR_THRESHOLD = 1000000 # 1/4 of 1/15 - 1/16 p sec rates, 1 ms
+# ERROR_THRESHOLD = 1000000 # 1/4 of 1/15 - 1/16 p sec rates, 1 ms
+# ERROR_THRESHOLD = 625000 # 1%
+ERROR_THRESHOLD = 1250000 # 2%
+# ERROR_THRESHOLD = 3125000 # 5%
+# ERROR_THRESHOLD = 6250000 #10%
 ONE_SEC_IN_NS = 1000000000
 
 class MsgInterval(Enum):
@@ -23,7 +27,7 @@ class PtpTiming:
         self._msgs = packets
         self._time_offset = timeOffset
         self._logger = logger
-        self.msg_interval = interval
+        self._msg_interval = interval
         self._status_ok = True
         self.error_over_threshold = []
         self.msg_rates = []
@@ -42,8 +46,8 @@ class PtpTiming:
     
     def _analyse_capture_time_regularity(self):
         irregularities_counter = 0 
-        self._logger.info(f'Analyse capture time regularity of {self.processed_ptp_type}:'\
-                        f'\n\tExpected time diff for {self.msg_interval} is: {self.msg_interval.value/1000} us., '\
+        self._logger.debug(f'Analyse capture time regularity of {self.processed_ptp_type}:'\
+                        f'\n\tExpected time diff for {self._msg_interval} is: {self._msg_interval.value/1000} us., '\
                         f'allowed delta set to: {ERROR_THRESHOLD/1000} us.')
         for i, msg in enumerate(self._msgs[:-1]):
             ns, ns_next = self._get_capture_time_diff(msg, self._msgs[i+1])
@@ -64,13 +68,13 @@ class PtpTiming:
             
     def _analyse_timestamp_regularity(self):
         irregularities_counter = 0 
-        self._logger.info(f'Analyse Timestamp regularity of {self.processed_ptp_type}:'\
-                        f'\n\tExpected time diff for {self.msg_interval} is: {self.msg_interval.value/1000} us., '\
+        self._logger.debug(f'Analyse Timestamp regularity of {self.processed_ptp_type}:'\
+                        f'\n\tExpected time diff for {self._msg_interval} is: {self._msg_interval.value/1000} us., '\
                         f'allowed delta set to: {ERROR_THRESHOLD/1000} us.')
         for i, msg in enumerate(self._msgs[:-1]): 
             if PtpType.is_sync(msg) or PtpType.is_announce(msg):
                 if msg.originTimestamp["s"] == 0:
-                    return    
+                    return False   
                 ns, ns_next = self._get_sync_timestamp_diff(msg, self._msgs[i+1])
             if  PtpType.is_followup(msg):
                 ns, ns_next = self._get_followup__timestamp_diff(msg, self._msgs[i+1])
@@ -99,7 +103,7 @@ class PtpTiming:
         if t1_diff < 0: 
             t1_diff = ONE_SEC_IN_NS - ns + ns_next
         rate = ONE_SEC_IN_NS / t1_diff
-        err = t1_diff - self.msg_interval.value
+        err = t1_diff - self._msg_interval.value
         return (err, rate, t1_diff)
         
     def _get_sync_timestamp_diff(self, msg, msg_n):

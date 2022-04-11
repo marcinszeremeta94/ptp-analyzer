@@ -1,20 +1,23 @@
+from dataclasses import dataclass
+import enum
 from .PTPv2 import PTPv2, PtpType
 from enum import Enum
 import time
 import numpy as np
 import statistics
 
+@dataclass
 class Ptp1StepExchenge:
-    sync = None
-    delay_req = None
-    delay_resp = None
-    sync_to_delay_req_time = 0
-    delay_req_to_resp_time = 0
+    sync = PTPv2()
+    delay_req = PTPv2()
+    delay_resp = PTPv2()
+    sync_to_delay_req_time = int()
+    delay_req_to_resp_time = int()
     
 
 class PtpMatched:
     
-    class DispatcherState(Enum):
+    class DispatcherState(enum.IntEnum):
         NEW_EXCHANGE = 1
         GOT_SYNC = 2
         WAITING_AT_RESP = 3
