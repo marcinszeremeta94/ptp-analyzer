@@ -32,8 +32,9 @@ class PtpStream:
         self.analyse_announce()
         self.analyse_ports()
         self.analyse_sequence_id()
-        self._logger.banner_large('timings')
+        self._logger.banner_large('ptp timings')
         self.analyse_timings()
+        self._logger.banner_large('ptp one step full sequential message exchange')
         self.analyse_if_stream_match_sequence_of_sync_dreq_dreq_pattern()
 
     def analyse_announce(self):
@@ -52,12 +53,9 @@ class PtpStream:
         seq_check.check_dresp_dresp_fup_sequence(self.delay_resp, self.delay_resp_fup)
 
     def analyse_timings(self):
-        self._announce_timing = PtpTiming(
-            self._logger, self._announce, self.time_offset, MsgInterval.Rate_8)
-        self._sync_timing = PtpTiming(
-            self._logger, self._sync, self.time_offset, MsgInterval.Rate_16)
-        self._followup_timing = PtpTiming(
-            self._logger, self._follow_up, self.time_offset, MsgInterval.Rate_16)
+        self._announce_timing = PtpTiming(self._logger, self._announce, self.time_offset)
+        self._sync_timing = PtpTiming(self._logger, self._sync, self.time_offset)
+        self._followup_timing = PtpTiming(self._logger, self._follow_up, self.time_offset)
 
     def analyse_if_stream_match_sequence_of_sync_dreq_dreq_pattern(self):
         self._sync_dreq_dresp_match = PtpMatched(
