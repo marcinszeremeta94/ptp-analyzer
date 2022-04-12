@@ -1,11 +1,11 @@
+import time
 from .Logger import Logger
 from .PTPv2 import PTPv2, PtpType
-from .PtpTiming import PtpTiming, MsgInterval
+from .PtpTiming import PtpTiming
 from .PtpMatched import PtpMatched
 from .PtpSequenceId import PtpSequenceId
 from .PtpAnnounceSignal import PtpAnnounceSignal
 from .PtpPortCheck  import PtpPortCheck
-import time
 
 
 class PtpStream:
@@ -33,7 +33,7 @@ class PtpStream:
         self.analyse_announce()
         self.analyse_ports()
         self.analyse_sequence_id()
-        #self.analyse_timings()
+        self.analyse_timings()
         self.analyse_if_stream_match_sequence_of_sync_dreq_dreq_pattern()
 
     def analyse_announce(self):
@@ -57,8 +57,7 @@ class PtpStream:
         self._followup_timing = PtpTiming(self._logger, self._follow_up, self.time_offset)
 
     def analyse_if_stream_match_sequence_of_sync_dreq_dreq_pattern(self):
-        self._sync_dreq_dresp_match = PtpMatched(
-            self._logger, self._packets, self.time_offset)
+        self._sync_dreq_dresp_match = PtpMatched(self._logger, self._packets, self.time_offset)
 
     def _add(self, pkt):
         if len(pkt) > 0:
@@ -188,7 +187,7 @@ class PtpStream:
         else:
             None
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return f'PTP Filtered Messages:\n\tAnnounce: {len(self.announce)}, \n\tSync: {len(self.sync)},'\
             f'\n\tFollow-up: {len(self.follow_up)}, \n\tDelay Request: {len(self.delay_req)},'\
             f'\n\tDelay Response: {len(self.delay_resp)},\n\tDelay Response Follow-up: {len(self.delay_resp_fup)}'\

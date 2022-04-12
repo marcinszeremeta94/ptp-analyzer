@@ -118,7 +118,7 @@ class PtpPortCheck:
             f'\n\tSource Clk ID and Port: {msg.sourcePortIdentity},\n\tSlave Clk ID and Port: {msg.requestingPortIdentity}')
         self._logger.msg_timing(msg, self.time_offset)
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         source_multicasting = 'Multicast' if self._is_mac_multicast(self.ptp_eth_source_destination) else ''
         slave_multicasting = 'Multicast' if self._is_mac_multicast(self.ptp_eth_slave_destination) else ''
         return f'Last PTP MAC address and Clock ID data:\n\tPTP Source MAC: {self.ptp_eth_source_port},'\

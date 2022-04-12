@@ -58,7 +58,10 @@ class Logger:
         self._log_file_name = log_file_name + '.log'
         self.log_dir_and_name = self._prepare_path()
         LOGS_TITLE = 'PTP ANALYSER'
+        if self.severity is LogsSeverity.NoLogs:
+            return
         with open(self.log_dir_and_name, 'w') as self._logFile:
+            self.banner_small('--------------------------')
             self.banner_large(LOGS_TITLE)
             self.info(f'Started at: {date.datetime.now()}')
 

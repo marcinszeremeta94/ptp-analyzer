@@ -77,7 +77,7 @@ class AnnounceData:
             self.local_steps_removed = 0
             self.time_source = 0
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return f'PTP signal source data from announce msg:\n\tClock ID: {self.clock_id},\n\tUTC Offset: '\
             f'{self.origin_utc_offset},\n\tpriority1: {self.priority_1},\n\tgrandmasterClockClass: '\
             f'{self.grandmaster_clock_class},\n\tgrandmasterClockAccuracy: {PTPv2.CLK_ACCURACY[self.grandmaster_clock_accuracy]},'\

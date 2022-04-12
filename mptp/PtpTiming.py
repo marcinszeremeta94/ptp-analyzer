@@ -1,4 +1,3 @@
-from tkinter.messagebox import NO
 from .PTPv2 import PtpType
 from enum import Enum
 import time
@@ -14,16 +13,16 @@ ONE_SEC_IN_NS = 1000000000
 
 class MsgInterval(Enum):
     # Value is time diff between msgs in ns
-    Rate_16 = 62500000
-    Rate_8 = 125000000
-    Rate_4 = 250000000
-    Rate_2 = 500000000
-    Rate_1 = 1000000000
+    Rate_16 = 62_500_000
+    Rate_8 = 125_000_000
+    Rate_4 = 250_000_000
+    Rate_2 = 500_000_000
+    Rate_1 = 1_000_000_000
 
 # This analysis makes sense for ptp msgs like announce, sync and follow-up
 class PtpTiming:
     
-    def __init__(self, logger, packets=[], timeOffset = 0, interval = MsgInterval.Rate_16):
+    def __init__(self, logger, packets, timeOffset = 0, interval = MsgInterval.Rate_16):
         self._msgs = packets
         self._time_offset = timeOffset
         self._logger = logger

@@ -1,11 +1,11 @@
-from mptp.Logger import Logger
-from .PTPv2 import PTPv2, PtpType
-from dataclasses import dataclass
 import enum
 import time
 import copy
-import numpy as np
 import statistics
+import numpy as np
+from dataclasses import dataclass
+from mptp.Logger import Logger
+from .PTPv2 import PTPv2, PtpType
 
 ONE_SEC_IN_NS = 1000000000
 ONE_SEC_IN_US = 1000000
@@ -103,15 +103,13 @@ class PtpMatched:
         self._update_current_time_differences()
         if(self._current_processed_exchange.sync_to_delay_req_time < 0 or self._current_processed_exchange.delay_req_to_resp_time < 0):
             self._unmatched_syncs.append(self._current_processed_exchange.sync)
-            self._unmatched_delay_reqs.append(
-                self._current_processed_exchange.delay_req)
+            self._unmatched_delay_reqs.append(self._current_processed_exchange.delay_req)
             self._unmatched_delay_resps.append(p)
             self._unmatched_all.append(p)
             self._logger.error(f'PTP Exchange pcap time went back in time. Sync-to-Delay_Req: '
                                f'{self._current_processed_exchange.sync_to_delay_req_time} us, Delay_Req-to-Delay_Resp: '
                                f'{self._current_processed_exchange.delay_req_to_resp_time} us. Exchange Discarded!')
-            self._logger.msg_timing(
-                self._current_processed_exchange.sync, self.time_offset)
+            self._logger.msg_timing(self._current_processed_exchange.sync, self.time_offset)
         else:
             self._ptp_msg_exchange.append(copy.deepcopy(self._current_processed_exchange))
 
@@ -170,11 +168,11 @@ class PtpMatched:
                 self._logger.warning(
                     f'Unordered DELAY_RES:' + self._msg_sequence_and_time_info(msg))
 
-    def _msg_sequence_and_time_info(self, msg):
+    def _msg_sequence_and_time_info(self, msg) -> str:
         t = time.strftime('%H:%M:%S', time.localtime(msg.time))
         return f'   Capture time: {t},    Capture offset: {msg.time-self.time_offset:.9f},\tSequence ID: {msg.sequenceId}'
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return f'Ptp Signal Match 1-step Sequence:\n\tPtp Exchanges (Sync-D_Req-D_Resp): {len(self._ptp_msg_exchange)},'\
             f'\n\tDiscarded (unhandled) Sync Msgs: {len(self._unmatched_syncs)},\n\tDiscarded (unordered) Delay Reqs: '\
             f'{len(self._unmatched_delay_reqs)},\n\tDiscarded (unordered) Delay Resps: {len(self._unmatched_delay_resps)},'
