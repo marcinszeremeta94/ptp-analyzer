@@ -5,12 +5,11 @@ from .PtpTiming import PtpTiming
 from .PtpMatched import PtpMatched
 from .PtpSequenceId import PtpSequenceId
 from .PtpAnnounceSignal import PtpAnnounceSignal
-from .PtpPortCheck  import PtpPortCheck
+from .PtpPortCheck import PtpPortCheck
 
 
 class PtpStream:
-
-    def __init__(self, logger: Logger, packets):
+    def __init__(self, logger: Logger, packets: list[PTPv2]):
         self._logger = logger
         self.time_offset = 0
         self._packets = packets
@@ -24,11 +23,12 @@ class PtpStream:
         self._other_ptp_msgs = []
         self._ptp_msgs_total = []
         self._add(self._cut_boundaries(packets))
-        self._logger.banner_small('counted messages')
+        self._logger.banner_small("counted messages")
         self._logger.info(self.__repr__())
 
     def analyse(self):
         if len(self._ptp_msgs_total) == 0:
+            self._logger.error("PTP stream empty")
             return
         self.analyse_announce()
         self.analyse_ports()
@@ -39,31 +39,41 @@ class PtpStream:
     def analyse_announce(self):
         self._announce_sig = PtpAnnounceSignal(self._logger, self.time_offset)
         self._announce_sig.check_announce_consistency(self.announce)
-        
+
     def analyse_ports(self):
         port_check = PtpPortCheck(self._logger, self.time_offset)
         port_check.check_ports(self._ptp_msgs_total)
 
     def analyse_sequence_id(self):
-        self._logger.banner_large('ptp messages sequence id analysis')
+        if len(self._ptp_msgs_total) == 0:
+            self._logger.error("PTP stream empty")
+            return
+        self._logger.banner_large("ptp messages sequence id analysis")
         seq_check = PtpSequenceId(self._logger, self.time_offset)
         seq_check.check_sync_followup_sequence(self.sync, self.follow_up)
         seq_check.check_delay_req_resp_sequence(self.delay_req, self.delay_resp)
         seq_check.check_dresp_dresp_fup_sequence(self.delay_resp, self.delay_resp_fup)
 
     def analyse_timings(self):
+        if len(self._ptp_msgs_total) == 0:
+            self._logger.error("PTP stream empty")
+            return
+        self._logger.banner_large("ptp timing and rate")
         self._announce_timing = PtpTiming(self._logger, self._announce, self.time_offset)
         self._sync_timing = PtpTiming(self._logger, self._sync, self.time_offset)
         self._followup_timing = PtpTiming(self._logger, self._follow_up, self.time_offset)
 
     def analyse_if_stream_match_sequence_of_sync_dreq_dreq_pattern(self):
+        if len(self._sync) == 0:
+            self._logger.error("No PTP Sync messages")
+            return
         self._sync_dreq_dresp_match = PtpMatched(self._logger, self._packets, self.time_offset)
 
-    def _add(self, pkt):
+    def _add(self, pkt: list[PTPv2]):
         if len(pkt) > 0:
             self._add_time_data(pkt)
         else:
-            self._logger.info(f'Provided stream empty!')
+            self._logger.info(f"Provided stream empty!")
             return
         if type(pkt) == PTPv2:
             self._add_dispatch(pkt)
@@ -71,7 +81,7 @@ class PtpStream:
             for p in pkt:
                 self._add_dispatch(p)
 
-    def _add_dispatch(self, p):
+    def _add_dispatch(self, p: PTPv2):
         if PtpType.is_sync(p):
             self._sync.append(p)
         elif PtpType.is_delay_req(p) or PtpType.is_pdelay_req(p):
@@ -90,14 +100,13 @@ class PtpStream:
             self._other_ptp_msgs.append(p)
         self._ptp_msgs_total.append(p)
 
-    def _add_time_data(self, pkt):
+    def _add_time_data(self, pkt: PTPv2):
         self.time_offset = pkt[0].time
-        self.pcap_start_date = time.strftime(
-            '%Y-%m-%d %H:%M:%S', time.localtime(pkt[0].time))
-        self._logger.info(f'Pcap started at {self.pcap_start_date}')
+        self.pcap_start_date = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime(pkt[0].time))
+        self._logger.info(f"Pcap started at {self.pcap_start_date}")
 
     @staticmethod
-    def _cut_boundaries(raw_ptp_list):
+    def _cut_boundaries(raw_ptp_list: list[PTPv2]):
         for ptp_msg in raw_ptp_list:
             if PtpType.is_sync(ptp_msg):
                 break
@@ -154,42 +163,45 @@ class PtpStream:
 
     @property
     def announce_data(self):
-        if hasattr(self, '_announce_sig'):
+        if hasattr(self, "_announce_sig"):
             self._announce_sig._announce_data
         else:
             None
 
     @property
     def announce_timing(self):
-        if hasattr(self, '_announce_timing'):
+        if hasattr(self, "_announce_timing"):
             self._announce_timing
         else:
             None
 
     @property
     def sync_timing(self):
-        if hasattr(self, '_sync_timing'):
+        if hasattr(self, "_sync_timing"):
             self._sync_timing
         else:
             None
 
     @property
     def followup_timing(self):
-        if hasattr(self, '_followup_timing'):
+        if hasattr(self, "_followup_timing"):
             self._followup_timing
         else:
             None
 
     @property
     def sync_dreq_dresp_matc(self):
-        if hasattr(self, '_sync_dreq_dresp_match'):
+        if hasattr(self, "_sync_dreq_dresp_match"):
             self._sync_dreq_dresp_match
         else:
             None
 
     def __repr__(self) -> str:
-        return f'PTP Filtered Messages:\n\tAnnounce: {len(self.announce)}, \n\tSync: {len(self.sync)},'\
-            f'\n\tFollow-up: {len(self.follow_up)}, \n\tDelay Request: {len(self.delay_req)},'\
-            f'\n\tDelay Response: {len(self.delay_resp)},\n\tDelay Response Follow-up: {len(self.delay_resp_fup)}'\
-            f'\n\tSignalling: {len(self.signalling)},\n\tOther PTP Messages: {len(self.other_ptp)}'\
-            f'\n\tPTP Messages Total: {len(self.ptp_total)}'
+        return (
+            f"PTP Filtered Messages:\n\tAnnounce: {len(self.announce)},\n\tSync: {len(self.sync)},"
+            f"\n\tFollow-up: {len(self.follow_up)}, \n\tDelay Request: {len(self.delay_req)},"
+            f"\n\tDelay Response: {len(self.delay_resp)},\n\tDelay Response Follow-up:"
+            f"{len(self.delay_resp_fup)}\n\tSignalling: {len(self.signalling)},\n\t"
+            f"Other PTP Messages: {len(self.other_ptp)}\n\tPTP Messages Total: "
+            f"{len(self.ptp_total)}"
+        )

@@ -1,6 +1,18 @@
 from enum import Enum
-from scapy.fields import BitEnumField, BitField, ByteField, ConditionalField, FlagsField, \
-    LongField, ShortField, SignedByteField, XBitField, XByteField, XIntField, XStrFixedLenField
+from scapy.fields import (
+    BitEnumField,
+    BitField,
+    ByteField,
+    ConditionalField,
+    FlagsField,
+    LongField,
+    ShortField,
+    SignedByteField,
+    XBitField,
+    XByteField,
+    XIntField,
+    XStrFixedLenField,
+)
 from scapy.layers.l2 import Ether
 from scapy.packet import Packet, bind_layers
 
@@ -64,10 +76,22 @@ class PTPv2(Packet):
     }
 
     FLAGS = [
-        "LI61", "LI59", "UTC_REASONABLE", "TIMESCALE",
-        "TIME_TRACEABLE", "FREQUENCY_TRACEABLE", "?", "?",
-        "ALTERNATE_MASTER", "TWO_STEP", "UNICAST", "?",
-        "?", "profileSpecific1", "profileSpecific2", "SECURITY",
+        "LI61",
+        "LI59",
+        "UTC_REASONABLE",
+        "TIMESCALE",
+        "TIME_TRACEABLE",
+        "FREQUENCY_TRACEABLE",
+        "?",
+        "?",
+        "ALTERNATE_MASTER",
+        "TWO_STEP",
+        "UNICAST",
+        "?",
+        "?",
+        "profileSpecific1",
+        "profileSpecific2",
+        "SECURITY",
     ]
 
     fields_desc = [
@@ -86,52 +110,79 @@ class PTPv2(Packet):
         ShortField("sequenceId", 0),
         XByteField("control", 0),
         SignedByteField("logMessageInterval", -3),
-
+        
         # Announce
-        ConditionalField(TimestampField("originTimestamp", 0),
-                         lambda pkt: PtpType.is_announce(pkt) or PtpType.is_sync(pkt) or PtpType.is_delay_req(pkt)),
-        ConditionalField(ShortField("utcOffset", 0),
-                         lambda pkt: PtpType.is_announce(pkt)),
-        ConditionalField(ShortField("priority1", 0),
-                         lambda pkt: PtpType.is_announce(pkt)),
-        ConditionalField(ByteField("grandmasterClockClass", 0),
-                         lambda pkt: PtpType.is_announce(pkt)),
-        ConditionalField(BitEnumField("grandmasterClockAccuracy", 0x21, 8, CLK_ACCURACY),
-                         lambda pkt: PtpType.is_announce(pkt)),
-        ConditionalField(ShortField("grandmasterClockVariance", 0),
-                         lambda pkt: PtpType.is_announce(pkt)),
-        ConditionalField(ByteField("priority2", 0),
-                         lambda pkt: PtpType.is_announce(pkt)),
-        ConditionalField(XStrFixedLenField("grandmasterClockId", 0, 8),
-                         lambda pkt: PtpType.is_announce(pkt)),
-        ConditionalField(ShortField("localStepsRemoved", 0),
-                         lambda pkt: PtpType.is_announce(pkt)),
-        ConditionalField(BitEnumField("timeSource", 0x90, 8, TIME_SOURCE),
-                         lambda pkt: PtpType.is_announce(pkt)),
-
-        ConditionalField(ShortField("padding", 0),
-                         lambda pkt: PtpType.is_sync(pkt) or PtpType.is_delay_req(pkt)),
-
+        ConditionalField(
+            TimestampField("originTimestamp", 0),
+            lambda pkt: PtpType.is_announce(pkt)
+            or PtpType.is_sync(pkt)
+            or PtpType.is_delay_req(pkt),
+        ),
+        ConditionalField(
+            ShortField("utcOffset", 0), lambda pkt: PtpType.is_announce(pkt)
+        ),
+        ConditionalField(
+            ShortField("priority1", 0), lambda pkt: PtpType.is_announce(pkt)
+        ),
+        ConditionalField(
+            ByteField("grandmasterClockClass", 0), lambda pkt: PtpType.is_announce(pkt)
+        ),
+        ConditionalField(
+            BitEnumField("grandmasterClockAccuracy", 0x21, 8, CLK_ACCURACY),
+            lambda pkt: PtpType.is_announce(pkt),
+        ),
+        ConditionalField(
+            ShortField("grandmasterClockVariance", 0),
+            lambda pkt: PtpType.is_announce(pkt),
+        ),
+        ConditionalField(
+            ByteField("priority2", 0), lambda pkt: PtpType.is_announce(pkt)
+        ),
+        ConditionalField(
+            XStrFixedLenField("grandmasterClockId", 0, 8),
+            lambda pkt: PtpType.is_announce(pkt),
+        ),
+        ConditionalField(
+            ShortField("localStepsRemoved", 0), lambda pkt: PtpType.is_announce(pkt)
+        ),
+        ConditionalField(
+            BitEnumField("timeSource", 0x90, 8, TIME_SOURCE),
+            lambda pkt: PtpType.is_announce(pkt),
+        ),
+        ConditionalField(
+            ShortField("padding", 0),
+            lambda pkt: PtpType.is_sync(pkt) or PtpType.is_delay_req(pkt),
+        ),
         # FollowUp
-        ConditionalField(TimestampField("preciseOriginTimestamp", 0),
-                         lambda pkt: PtpType.is_followup(pkt)),
-        ConditionalField(XStrFixedLenField("informationTlv", 0, 32),
-                         lambda pkt: PtpType.is_followup(pkt)),
-
+        ConditionalField(
+            TimestampField("preciseOriginTimestamp", 0),
+            lambda pkt: PtpType.is_followup(pkt),
+        ),
+        ConditionalField(
+            XStrFixedLenField("informationTlv", 0, 32),
+            lambda pkt: PtpType.is_followup(pkt),
+        ),
         # DelayResp
-        ConditionalField(TimestampField("receiveTimestamp", 0),
-                         lambda pkt: PtpType.is_delay_resp(pkt)),
-
+        ConditionalField(
+            TimestampField("receiveTimestamp", 0),
+            lambda pkt: PtpType.is_delay_resp(pkt),
+        ),
         # PDelayResp
-        ConditionalField(TimestampField("requestReceiptTimestamp", 0),
-                         lambda pkt: PtpType.is_pdelay_resp(pkt)),
-
+        ConditionalField(
+            TimestampField("requestReceiptTimestamp", 0),
+            lambda pkt: PtpType.is_pdelay_resp(pkt),
+        ),
         # DelayRespFollowUp
-        ConditionalField(TimestampField("responseOriginTimestamp", 0),
-                         lambda pkt: PtpType.is_delay_resp_followup(pkt)),
-        ConditionalField(PortIdentityField("requestingPortIdentity", 0),
-                         lambda pkt: PtpType.is_delay_resp(pkt) or PtpType.is_delay_resp_followup(pkt) or
-                         PtpType.is_pdelay_resp(pkt)),
+        ConditionalField(
+            TimestampField("responseOriginTimestamp", 0),
+            lambda pkt: PtpType.is_delay_resp_followup(pkt),
+        ),
+        ConditionalField(
+            PortIdentityField("requestingPortIdentity", 0),
+            lambda pkt: PtpType.is_delay_resp(pkt)
+            or PtpType.is_delay_resp_followup(pkt)
+            or PtpType.is_pdelay_resp(pkt),
+        ),
     ]
 
 
@@ -139,7 +190,6 @@ bind_layers(Ether, PTPv2, type=0x88F7)
 
 
 class PtpType:
-
     @staticmethod
     def get_ptp_msg_type(ptp_v2: PTPv2) -> PTP_MSG_TYPE:
         if ptp_v2.messageType == PTP_MSG_TYPE.SYNC_MSG.value:
@@ -166,25 +216,25 @@ class PtpType:
     @staticmethod
     def get_ptp_type_str(ptp_v2: PTPv2) -> str:
         if ptp_v2.messageType == PTP_MSG_TYPE.SYNC_MSG.value:
-            return 'Sync'
+            return "Sync"
         elif ptp_v2.messageType == PTP_MSG_TYPE.FOLLOW_UP_MSG.value:
-            return 'Follow-up'
+            return "Follow-up"
         elif ptp_v2.messageType == PTP_MSG_TYPE.DELAY_REQ_MSG.value:
-            return 'Delay req'
+            return "Delay req"
         elif ptp_v2.messageType == PTP_MSG_TYPE.DELAY_RESP_MSG.value:
-            return 'Delay res'
+            return "Delay res"
         elif ptp_v2.messageType == PTP_MSG_TYPE.PDELAY_REQ_MSG.value:
-            return 'PDelay req'
+            return "PDelay req"
         elif ptp_v2.messageType == PTP_MSG_TYPE.PDELAY_RESP_MSG.value:
-            return 'PDelay res'
+            return "PDelay res"
         elif ptp_v2.messageType == PTP_MSG_TYPE.PDELAY_RESP_FOLLOW_UP_MSG.value:
-            return 'Delay res follow-up'
+            return "Delay res follow-up"
         elif ptp_v2.messageType == PTP_MSG_TYPE.ANNOUNCE_MSG.value:
-            return 'Announce'
+            return "Announce"
         elif ptp_v2.messageType == PTP_MSG_TYPE.SIGNALLING_MSG.value:
-            return 'Signaling'
+            return "Signaling"
         else:
-            return 'Unknown'
+            return "Unknown"
 
     @staticmethod
     def is_sync(ptpv2: PTPv2) -> bool:

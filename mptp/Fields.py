@@ -17,8 +17,8 @@ class TimestampField(BitField):
         int_part = val >> 32
         frac_part = val & (1 << 32) - 1
         res = dict()
-        res['s'] = int_part
-        res['ns'] = frac_part
+        res["s"] = int_part
+        res["ns"] = frac_part
         return res
 
 
@@ -32,7 +32,7 @@ class PortIdentityField(XStrFixedLenField):
         if val is None:
             return "None"
         p = struct.unpack(self.encoding, val)
-        return f"{p[0]:02x}:{p[1]:02x}:{p[2]:02x}:{p[5]:02x}:{p[6]:02x}:{p[7]:02x}/{p[8]}"
+        return (f"{p[0]:02x}:{p[1]:02x}:{p[2]:02x}:{p[5]:02x}:{p[6]:02x}:{p[7]:02x}/{p[8]}")
 
     def i2repr(self, pkt, x):
         return self.i2h(pkt, x)
