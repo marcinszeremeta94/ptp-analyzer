@@ -28,7 +28,8 @@ class PtpAnnounceSignal:
         for msg in announce:
             if AnnounceData(msg) != self._announce_data:
                 inconsistent_counter += 1
-                self._logger.warning(f'Announce msg data inconsistent with first announce data')
+                if inconsistent_counter == 1:
+                    self._logger.banner_small('Inconsistent Announce messages')
                 self._logger.msg_timing(msg, self.time_offset)
         if inconsistent_counter > 0:
             self._logger.warning(

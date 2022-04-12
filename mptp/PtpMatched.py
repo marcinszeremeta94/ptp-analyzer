@@ -17,11 +17,13 @@ class Ptp1StepExchenge:
     sync = PTPv2()
     delay_req = PTPv2()
     delay_resp = PTPv2()
-    sync_to_delay_req_time = int()
-    delay_req_to_resp_time = int()
+    t1_t4 = float()
+    sync_to_delay_req_time = float()
+    delay_req_to_resp_time = float()
 
     def __repr__(self) -> str:
-        return f'Delay Sync-to-Delay_Req: {self.sync_to_delay_req_time}, Delay_req-to-Delay_Resp: {self.delay_req_to_resp_time}\n'
+        return f'Delay Sync-to-Delay_Req: {self.sync_to_delay_req_time}, Delay_req-to-Delay_Resp: {self.delay_req_to_resp_time}'\
+                f'T1-T4 Timestamps difference: {self.t1_t4}\n'
 
 
 class PtpMatched:
@@ -41,6 +43,7 @@ class PtpMatched:
         self._unmatched_delay_resps = []
         self._dispatcher_state = self.DispatcherState.NEW_EXCHANGE
         self._current_processed_exchange = Ptp1StepExchenge()
+        self._logger.banner_large('ptp one step full sequential message exchange')
         self._add(packets)
         self._log_state()
 
@@ -100,44 +103,62 @@ class PtpMatched:
         self._update_current_time_differences()
         if(self._current_processed_exchange.sync_to_delay_req_time < 0 or self._current_processed_exchange.delay_req_to_resp_time < 0):
             self._unmatched_syncs.append(self._current_processed_exchange.sync)
-            self._unmatched_delay_reqs.append(self._current_processed_exchange.delay_req)
+            self._unmatched_delay_reqs.append(
+                self._current_processed_exchange.delay_req)
             self._unmatched_delay_resps.append(p)
             self._unmatched_all.append(p)
             self._logger.error(f'PTP Exchange pcap time went back in time. Sync-to-Delay_Req: '
-                                 f'{self._current_processed_exchange.sync_to_delay_req_time} us, Delay_Req-to-Delay_Resp: '
-                                 f'{self._current_processed_exchange.delay_req_to_resp_time} us. Exchange Discarded!')
-            self._logger.msg_timing(self._current_processed_exchange.sync, self.time_offset)
+                               f'{self._current_processed_exchange.sync_to_delay_req_time} us, Delay_Req-to-Delay_Resp: '
+                               f'{self._current_processed_exchange.delay_req_to_resp_time} us. Exchange Discarded!')
+            self._logger.msg_timing(
+                self._current_processed_exchange.sync, self.time_offset)
         else:
             self._ptp_msg_exchange.append(copy.deepcopy(self._current_processed_exchange))
 
     def _update_current_time_differences(self):
+        ns = self._current_processed_exchange.sync.originTimestamp["ns"]
+        if PtpType.is_pdelay_resp(self._current_processed_exchange.delay_resp):
+            ns_next = self._current_processed_exchange.delay_resp.requestReceiptTimestamp["ns"]
+        else:
+            ns_next = self._current_processed_exchange.delay_resp.receiveTimestamp["ns"]
+        t1_t4 = ns_next - ns
+        if t1_t4 < 0: 
+            t1_t4 = ONE_SEC_IN_NS - ns + ns_next
+        self._current_processed_exchange.t1_t4 = t1_t4 / ONE_SEC_IN_MS
         self._current_processed_exchange.sync_to_delay_req_time = (
             self._current_processed_exchange.delay_req.time - self._current_processed_exchange.sync.time) * ONE_SEC_IN_US
         self._current_processed_exchange.delay_req_to_resp_time = (
             self._current_processed_exchange.delay_resp.time - self._current_processed_exchange.delay_req.time) * ONE_SEC_IN_US
 
     def _log_state(self):
-        self._logger.new_line()
-        self._log_unordered_msgs()
-        self._log_statistics()
         self._logger.info(self.__repr__())
+        self._logger.banner_small('Unordered ptp messages')
+        self._log_unordered_msgs()
+        self._logger.banner_small('ptp message exchange statistics')
+        self._log_statistics()
 
     def _log_statistics(self):
-        sync_to_delay = [
-            exchange.sync_to_delay_req_time for exchange in self._ptp_msg_exchange]
+        sync_to_delay = [exchange.sync_to_delay_req_time for exchange in self._ptp_msg_exchange]
         if len(sync_to_delay) != 0:
             self._logger.info(f'Sync message to Delay Request message capture time in matched PTP messages exchange:\n\tmean: '
-                              f'{statistics.mean(sync_to_delay):.3f} ms,\n\tstd dev: {statistics.stdev(sync_to_delay):.3f} ms,\n\tmin: '
-                              f'{np.min(sync_to_delay):.3f} ms,\n\tmax: {np.max(sync_to_delay):.3f} ms')
-        delay_req_resp_delay = [
-            exchange.delay_req_to_resp_time for exchange in self._ptp_msg_exchange]
+                              f'{statistics.mean(sync_to_delay):.3f} us,\n\tstd dev: {statistics.stdev(sync_to_delay):.3f} us,\n\tmin: '
+                              f'{np.min(sync_to_delay):.3f} us,\n\tmax: {np.max(sync_to_delay):.3f} us')
+        delay_req_resp_delay = [exchange.delay_req_to_resp_time for exchange in self._ptp_msg_exchange]
         if len(delay_req_resp_delay) != 0:
-            self._logger.info(f'Delay Request message to Delay Response message  capture time in matched PTP messages '
-                              f'exchange:\n\tmean: {statistics.mean(delay_req_resp_delay):.3f} ms,\n\tstd dev: '
-                              f'{statistics.stdev(delay_req_resp_delay):.3f} ms,\n\tmin: {np.min(delay_req_resp_delay):.3f} ms,'
-                              f'\n\tmax: {np.max(delay_req_resp_delay):.3f} ms')
+            self._logger.info(f'Delay Request message to Delay Response message capture time in matched PTP messages '
+                              f'exchange:\n\tmean: {statistics.mean(delay_req_resp_delay):.3f} us,\n\tstd dev: '
+                              f'{statistics.stdev(delay_req_resp_delay):.3f} us,\n\tmin: {np.min(delay_req_resp_delay):.3f} us,'
+                              f'\n\tmax: {np.max(delay_req_resp_delay):.3f} us')
+        t1_to_t4 = [exchange.t1_t4 for exchange in self._ptp_msg_exchange]
+        if len(t1_to_t4) != 0:
+            self._logger.info(f'1st Timestamp to 4th Timestamp time difference in full PTP messages exchange'
+                              f'exchange:\n\tmean: {statistics.mean(t1_to_t4):.3f} us,\n\tstd dev: '
+                              f'{statistics.stdev(t1_to_t4):.3f} us,\n\tmin: {np.min(t1_to_t4):.3f} us,'
+                              f'\n\tmax: {np.max(t1_to_t4):.3f} us')
 
     def _log_unordered_msgs(self):
+        if len(self._unmatched_all) == 0:
+            self._logger.info('There are no unordered messages')
         for msg in self._unmatched_all:
             if PtpType.is_sync(msg):
                 self._logger.warning(

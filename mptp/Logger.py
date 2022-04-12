@@ -31,17 +31,17 @@ class Logger:
         banner_large = 7
 
     _log_type_allowed_in_no_logs = ()
-    _log_type_common = (LogType.banner_large, LogType.banner_small, LogType.newline)
+    _log_type_common = (LogType.banner_large, LogType.newline)
 
     _log_type_allowed_in_error_only = _log_type_common + (LogType.error,)
     _log_type_allowed_in_info_only = _log_type_common + \
         (LogType.error, LogType.info)
     _log_type_allowed_in_waring_and_errors = _log_type_common + \
-        (LogType.error, LogType.warning, LogType.msg_timing)
+        (LogType.error, LogType.warning, LogType.msg_timing, LogType.banner_small)
     _log_type_allowed_in_regular = _log_type_common + \
-        (LogType.error, LogType.warning, LogType.info, LogType.msg_timing)
+        (LogType.error, LogType.warning, LogType.info, LogType.msg_timing, LogType.banner_small)
     _log_type_allowed_in_debug = _log_type_common + \
-        (LogType.error, LogType.warning, LogType.info, LogType.debug, LogType.msg_timing)
+        (LogType.error, LogType.warning, LogType.info, LogType.debug, LogType.msg_timing, LogType.banner_small)
 
     BANNER_LEN = 140
     LOGS_SEPARATOR = '\n'
@@ -161,17 +161,11 @@ class Logger:
             print(string)
 
     def _prepare_small_banner(self, in_string: str) -> str:
-        padding_len = self.BANNER_LEN - len(in_string)
-        padding_blank = ''
-        if padding_len % 2 != 0:
-            padding_blank = ' '
-            padding_len -= 1
-        padding_offset = '****'
-        padding_part = int(padding_len / 16)
-        padding_closer = padding_part * ' '
-        padding_further = (7 * padding_part) * '*'
-        return padding_offset + padding_further + padding_closer + padding_blank + in_string + \
-            padding_closer + padding_further + padding_offset
+        banner_frame_verdical = '-----------------------------------------------------------'
+        title_len = self.BANNER_LEN - 2 * len(banner_frame_verdical)
+        banner_title = f'{in_string:^{title_len}}'
+        prepared_banner = f'{banner_frame_verdical}{banner_title}{banner_frame_verdical}'
+        return  prepared_banner[:self.BANNER_LEN]
 
     def _prepare_large_banner(self, in_string: str) -> str:
         banner_frame_horizontal = self.BANNER_LEN * '='

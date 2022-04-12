@@ -19,6 +19,7 @@ class PtpSequenceId:
     def check_dresp_dresp_fup_sequence(self, dresp, dresp_fup):
         if len(dresp_fup) == 0:
             return
+        self._logger.banner_small('delay request follow-up message sequence id')
         delay_resp_fup_correct = self._is_same_len(dresp_fup, dresp)
         delay_resp_fup_correct &= self._is_sequence_in_order(dresp_fup)
         delay_resp_fup_correct &= self._is_sequence_in_superset(dresp, dresp_fup)
@@ -28,12 +29,14 @@ class PtpSequenceId:
     def _check_sync_sequence_correctness(self, sync):
         if len(sync) == 0:
             return
+        self._logger.banner_small('Sync message sequence id')
         if self._is_sequence_in_order(sync):
             self._logger.info('Sync msg sequenceId: [OK]')
 
     def _check_followup_sequence_correctness(self, sync, followup):
         if len(followup) == 0:
             return
+        self._logger.banner_small('Follow-up message sequence id')
         followup_correct = self._is_same_len(sync, followup)
         followup_correct &= self._is_sequence_in_order(followup)
         followup_correct &= self._is_sequence_in_superset(sync, followup)
@@ -43,6 +46,7 @@ class PtpSequenceId:
     def _check_delay_req_sequence_correctness(self, dreq, dresp):
         if len(dreq) == 0:
             return
+        self._logger.banner_small('delay request message sequence id')
         delay_req_correct = self._is_same_len(dreq, dresp)
         delay_req_correct &= self._is_sequence_in_order(dreq)
         if delay_req_correct:
@@ -51,6 +55,7 @@ class PtpSequenceId:
     def _check_delay_resp_sequence_correctness(self, dreq, dresp):
         if len(dresp) == 0:
             return
+        self._logger.banner_small('delay resp message sequence id')
         delay_resp_correct = self._is_sequence_in_order(dresp)
         delay_resp_correct &= self._is_sequence_in_superset(dreq, dresp)
         if delay_resp_correct:
@@ -84,8 +89,7 @@ class PtpSequenceId:
         return True
 
     def _log_inconsistency(self, frame: PTPv2, counter: int):
-        self._logger.info(f'{PtpType.get_ptp_type_str(frame)} '\
-                f'number of sequence Id inconsistencies: {counter}')
+        self._logger.info(f'{PtpType.get_ptp_type_str(frame)} number of sequence Id inconsistencies: {counter}')
     
     def _log_mismatch(self, frame: PTPv2, next_f: PTPv2, diff: int):
         self._logger.warning(

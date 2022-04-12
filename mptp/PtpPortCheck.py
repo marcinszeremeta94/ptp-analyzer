@@ -33,6 +33,7 @@ class PtpPortCheck:
             self._logger.info(f'PTP Clock ID and MAC number of issues found: {self._inconsistency_counter}')
         else:
             self._logger.info(f'PTP Clock ID and MAC addresses: [OK]')
+        self._logger.banner_small('Port and clock id addresses')
         self._logger.info(self.__repr__())
 
     def _check_sync_fup_announce_ports(self, msg: PTPv2):
@@ -57,7 +58,7 @@ class PtpPortCheck:
         if self.ptp_eth_source_port != msg.src or self.ptp_eth_source_destination != msg.dst or \
                 self.ptp_source_clk_id != msg.sourcePortIdentity or self.ptp_slave_clk_id != msg.requestingPortIdentity:
             self._inconsistency_counter += 1
-            self.__log_delay_response_issue(msg)
+            self._log_delay_response_issue(msg)
 
     def _initial_source_values(self, msg: PTPv2):
         if self.ptp_eth_source_port is None:
@@ -108,7 +109,7 @@ class PtpPortCheck:
             f'\n\tSlave Clk ID and Port: {msg.sourcePortIdentity}')
         self._logger.msg_timing(msg, self.time_offset)
 
-    def __log_delay_response_issue(self, msg):
+    def _log_delay_response_issue(self, msg):
         self._logger.warning(
             f'{PtpType.get_ptp_type_str(msg)} msg inconsistent with previous port data!\nRegistered port data:'
             f'\n\tSource MAC: {self.ptp_eth_source_port},\n\tDestination MAC: {self.ptp_eth_source_destination},'

@@ -24,6 +24,7 @@ class PtpStream:
         self._other_ptp_msgs = []
         self._ptp_msgs_total = []
         self._add(self._cut_boundaries(packets))
+        self._logger.banner_small('counted messages')
         self._logger.info(self.__repr__())
 
     def analyse(self):
@@ -32,9 +33,7 @@ class PtpStream:
         self.analyse_announce()
         self.analyse_ports()
         self.analyse_sequence_id()
-        self._logger.banner_large('ptp timings')
-        self.analyse_timings()
-        self._logger.banner_large('ptp one step full sequential message exchange')
+        #self.analyse_timings()
         self.analyse_if_stream_match_sequence_of_sync_dreq_dreq_pattern()
 
     def analyse_announce(self):
