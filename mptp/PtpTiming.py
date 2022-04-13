@@ -1,8 +1,8 @@
+from mptp.Logger import Logger
 from .PTPv2 import PTPv2, PtpType
-from enum import Enum
+from enum import IntEnum
 import time
 import statistics
-import numpy as np
 
 # ERROR_THRESHOLD = 1000000 # 1/4 of 1/15 - 1/16 p sec rates, 1 ms
 # ERROR_THRESHOLD = 625000 # 1%
@@ -12,7 +12,7 @@ ERROR_THRESHOLD = 1250000  # 2%
 ONE_SEC_IN_NS = 1000000000
 
 
-class MsgInterval(Enum):
+class MsgInterval(IntEnum):
     # Value is time diff between msgs in ns
     Rate_16 = 62_500_000
     Rate_8 = 125_000_000
@@ -36,7 +36,7 @@ def rate_to_str(rate: MsgInterval) -> str:
 
 # This analysis makes sense for ptp msgs like announce, sync and follow-up
 class PtpTiming:
-    def __init__(self, logger, packets: list[PTPv2], timeOffset=0, interval=MsgInterval.Rate_16):
+    def __init__(self, logger: Logger, packets: list[PTPv2], timeOffset=0, interval=MsgInterval.Rate_16):
         self._msgs = packets
         self._time_offset = timeOffset
         self._logger = logger
@@ -47,17 +47,13 @@ class PtpTiming:
         self.capture_error_over_threshold = []
         self.capture_rates = []
         self.processed_ptp_type = PtpType.get_ptp_msg_type(self._msgs[0]) if packets else None
-        if self.processed_ptp_type == None:
-            return
-        if self._is_input_valid():
-            self._status_ok &= self._analyse_timestamp_regularity()
-            self._status_ok &= self._analyse_capture_time_regularity()
-            self._logger.info(self.__repr__())
-        else:
-            self._logger.error(
-                "Provided input packets does not contain PTP msgs of one type!"
-            )
+        if not self._is_input_valid():
             self._status_ok = False
+            return
+        self._status_ok &= self._analyse_timestamp_regularity()
+        self._status_ok &= self._analyse_capture_time_regularity()
+        self._logger.info(self.__repr__())
+                   
 
     def _analyse_capture_time_regularity(self):
         irregularities_counter = 0
@@ -154,6 +150,8 @@ class PtpTiming:
         return f"Capture time: {t},\tCapture offset: {msg.time-self._time_offset:.9f},\tSequence ID: {msg.sequenceId}"
 
     def _is_input_valid(self):
+        if len(self._msgs) == 0:
+            return False
         ptp_type = PtpType.get_ptp_msg_type(self._msgs[0])
         for msg in self._msgs:
             if PtpType.get_ptp_msg_type(msg) != ptp_type:
@@ -177,9 +175,9 @@ class PtpTiming:
             return "Ptp Timing: not enough data"
         return (
             f"Ptp Timing of {PtpType.get_ptp_type_str(self._msgs[0])}:\nTimestamps:\n\tmean msg rate: {statistics.mean(self.msg_rates):.9f},"
-            f"\n\tstd dev msg rate: {statistics.stdev(self.msg_rates):.9f}, \n\tmin msg rate: {np.min(self.msg_rates):.9f},\n\t"
-            f"max msg rate: {np.max(self.msg_rates):.9f},\n\tnumber of msgs with irregularity above the limit: {len(self.error_over_threshold)}"
+            f"\n\tstd dev msg rate: {statistics.stdev(self.msg_rates):.9f}, \n\tmin msg rate: {min(self.msg_rates):.9f},\n\t"
+            f"max msg rate: {max(self.msg_rates):.9f},\n\tnumber of msgs with irregularity above the limit: {len(self.error_over_threshold)}"
             f"\nCapture time\n\tmean capture rate: {statistics.mean(self.capture_rates):.9f},\n\tstd dev capture rate: "
-            f"{statistics.stdev(self.capture_rates):.9f}, \n\tmin capture rate: {np.min(self.capture_rates):.9f},\n\tmax capture rate: "
-            f"{np.max(self.capture_rates):.9f},\n\tnumber of msgs captured with irregularity above the limit: {len(self.error_over_threshold)}\n"
+            f"{statistics.stdev(self.capture_rates):.9f}, \n\tmin capture rate: {min(self.capture_rates):.9f},\n\tmax capture rate: "
+            f"{max(self.capture_rates):.9f},\n\tnumber of msgs captured with irregularity above the limit: {len(self.error_over_threshold)}\n"
         )

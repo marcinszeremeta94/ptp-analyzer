@@ -27,7 +27,7 @@ def get_help():
         f"Analysis depth arguments adds up.\n\n"
         f"Analysis reports are stored in <Ptp Analyser Path>/reports/ \n"
         f"as .log files named same as provided pcap file. If file exist will be overwritten!\n\n"
-        f"ARGUMENTS:\n"
+        f"OPTIONS:\n"
         f"-v or --verbose\t\t\t\tMore logging and printing, all warnings and wrong frames time\n"
         f"-l or --no-logs\t\t\t\tTurns off logging to file\n"
         f"-p or --no-prints\t\t\tTurns off printing logs to console\n"

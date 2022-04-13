@@ -2,7 +2,6 @@ import enum
 import time
 import copy
 import statistics
-import numpy as np
 from dataclasses import dataclass
 from mptp.Logger import Logger
 from .PTPv2 import PTPv2, PtpType
@@ -160,8 +159,8 @@ class PtpMatched:
             self._logger.info(
                 f"Sync message to Delay Request message capture time in matched PTP messages "
                 f"exchange:\n\tmean: {statistics.mean(sync_to_delay):.3f} us,\n\tstd dev: "
-                f"{statistics.stdev(sync_to_delay):.3f} us,\n\tmin: {np.min(sync_to_delay):.3f}"
-                f"us,\n\tmax: {np.max(sync_to_delay):.3f} us"
+                f"{statistics.stdev(sync_to_delay):.3f} us,\n\tmin: {min(sync_to_delay):.3f}"
+                f"us,\n\tmax: {max(sync_to_delay):.3f} us"
             )
         d_req_resp_delay = [exchange.delay_req_to_resp_time for exchange in self._ptp_msg_exchange]
         if len(d_req_resp_delay) != 0:
@@ -169,15 +168,15 @@ class PtpMatched:
                 f"Delay Request message to Delay Response message capture time in matched PTP "
                 f"messages  exchange:\n\tmean: {statistics.mean(d_req_resp_delay):.3f} us,"
                 f"\n\tstd dev: {statistics.stdev(d_req_resp_delay):.3f} us,\n\tmin: "
-                f"{np.min(d_req_resp_delay):.3f} us,\n\tmax: {np.max(d_req_resp_delay):.3f} us"
+                f"{min(d_req_resp_delay):.3f} us,\n\tmax: {max(d_req_resp_delay):.3f} us"
             )
         t1_to_t4 = [exchange.t1_t4 for exchange in self._ptp_msg_exchange]
         if len(t1_to_t4) != 0:
             self._logger.info(
                 f"1st Timestamp to 4th Timestamp time difference in full PTP messages exchange"
                 f"exchange:\n\tmean: {statistics.mean(t1_to_t4):.3f} us,\n\tstd dev: "
-                f"{statistics.stdev(t1_to_t4):.3f} us,\n\tmin: {np.min(t1_to_t4):.3f} us,"
-                f"\n\tmax: {np.max(t1_to_t4):.3f} us"
+                f"{statistics.stdev(t1_to_t4):.3f} us,\n\tmin: {min(t1_to_t4):.3f} us,"
+                f"\n\tmax: {max(t1_to_t4):.3f} us"
             )
 
     def _log_unordered_msgs(self):
