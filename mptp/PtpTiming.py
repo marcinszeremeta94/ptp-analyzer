@@ -1,4 +1,4 @@
-from .PTPv2 import PtpType
+from .PTPv2 import PTPv2, PtpType
 from enum import Enum
 import time
 import statistics
@@ -20,10 +20,23 @@ class MsgInterval(Enum):
     Rate_2 = 500_000_000
     Rate_1 = 1_000_000_000
 
+def rate_to_str(rate: MsgInterval) -> str:
+    if rate == MsgInterval.Rate_1:
+        return "Rate: 1 message per second"
+    elif rate == MsgInterval.Rate_2:
+        return "Rate: 2 messages per second"
+    elif rate == MsgInterval.Rate_4:
+        return "Rate: 4 messages per second"
+    elif rate == MsgInterval.Rate_8:
+        return "Rate: 8 messages per second"
+    elif rate == MsgInterval.Rate_16:
+        return "Rate: 16 messages per second"
+    else:
+        return ""
 
 # This analysis makes sense for ptp msgs like announce, sync and follow-up
 class PtpTiming:
-    def __init__(self, logger, packets, timeOffset=0, interval=MsgInterval.Rate_16):
+    def __init__(self, logger, packets: list[PTPv2], timeOffset=0, interval=MsgInterval.Rate_16):
         self._msgs = packets
         self._time_offset = timeOffset
         self._logger = logger
@@ -33,9 +46,7 @@ class PtpTiming:
         self.msg_rates = []
         self.capture_error_over_threshold = []
         self.capture_rates = []
-        self.processed_ptp_type = (
-            PtpType.get_ptp_msg_type(self._msgs[0]) if len(packets) > 0 else None
-        )
+        self.processed_ptp_type = PtpType.get_ptp_msg_type(self._msgs[0]) if packets else None
         if self.processed_ptp_type == None:
             return
         if self._is_input_valid():
@@ -52,7 +63,7 @@ class PtpTiming:
         irregularities_counter = 0
         self._logger.debug(
             f"Analyse capture time regularity of {self.processed_ptp_type}:"
-            f"\n\tExpected time diff for {self._msg_interval} is: {self._msg_interval.value/1000} us., "
+            f"\n\tExpected time diff for {rate_to_str(self._msg_interval)} is: {self._msg_interval.value/1000} us., "
             f"allowed delta set to: {ERROR_THRESHOLD/1000} us."
         )
         for i, msg in enumerate(self._msgs[:-1]):
@@ -83,7 +94,7 @@ class PtpTiming:
         irregularities_counter = 0
         self._logger.debug(
             f"Analyse Timestamp regularity of {self.processed_ptp_type}:"
-            f"\n\tExpected time diff for {self._msg_interval} is: {self._msg_interval.value/1000} us., "
+            f"\n\tExpected time diff for{rate_to_str(self._msg_interval)} is: {self._msg_interval.value/1000} us., "
             f"allowed delta set to: {ERROR_THRESHOLD/1000} us."
         )
         for i, msg in enumerate(self._msgs[:-1]):
@@ -157,7 +168,7 @@ class PtpTiming:
     def success(self):
         return self._status_ok
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         if (
             len(self.msg_rates) == 0
             or len(self._msgs) == 0

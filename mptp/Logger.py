@@ -75,7 +75,8 @@ class Logger:
         self.print_options = print_options
         self.val_error_raise = val_error_raise
         self._log_file_name = log_file_name + ".log"
-        self.log_dir_and_name = self._prepare_path()
+        self._create_report_dir_if_not_created(self._prepare_path())
+        self.log_dir_and_name = self._prepare_path() + self._log_file_name
         if self.severity is LogsSeverity.NoLogs:
             return
         LOGS_TITLE = "PTP ANALYSER"
@@ -175,13 +176,18 @@ class Logger:
             f"Capture time: {t},\tCapture offset: {msg.time-time_offset:.9f},\t"
             f"Sequence ID: {msg.sequenceId}"
         )
+        
+    def _create_report_dir_if_not_created(self, dir: str):
+        if not os.path.exists(dir):
+            os.mkdir(dir)
+            print('report dir did not exist. created')
 
     def _prepare_path(self) -> str:
         p = os.path.dirname(__file__)
         if os.name == "nt":
-            p = p[: p.rfind("\\")] + "\\reports\\" + self._log_file_name
+            p = p[: p.rfind("\\")] + "\\reports\\"
         else:
-            p = p[: p.rfind("/")] + "/reports/" + self._log_file_name
+            p = p[: p.rfind("/")] + "/reports/"
         return p
 
     def _print_strict(self, string: str):
