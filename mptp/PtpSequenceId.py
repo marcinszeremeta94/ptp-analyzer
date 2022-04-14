@@ -1,9 +1,9 @@
 from .PTPv2 import PTPv2, PtpType
-from .Logger import Logger
+from appcommon.AppLogger.ILogger import ILogger
 
 
 class PtpSequenceId:
-    def __init__(self, logger: Logger, time_offset=0):
+    def __init__(self, logger: ILogger, time_offset=0):
         self._logger = logger
         self.time_offset = time_offset
 

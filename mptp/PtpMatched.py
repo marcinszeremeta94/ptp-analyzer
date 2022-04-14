@@ -3,7 +3,7 @@ import time
 import copy
 import statistics
 from dataclasses import dataclass
-from mptp.Logger import Logger
+from appcommon.AppLogger.ILogger import ILogger
 from .PTPv2 import PTPv2, PtpType
 
 ONE_SEC_IN_NS = 1000000000
@@ -34,7 +34,7 @@ class PtpMatched:
         GOT_SYNC = 2
         WAITING_AT_RESP = 3
 
-    def __init__(self, logger: Logger, packets: list[PTPv2], time_offset=0):
+    def __init__(self, logger: ILogger, packets: list[PTPv2], time_offset=0):
         self.time_offset = time_offset
         self._logger = logger
         self._ptp_msg_exchange = []

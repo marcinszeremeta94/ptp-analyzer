@@ -2,23 +2,10 @@ from enum import Enum
 import os
 import time
 import datetime as date
+from .LoggerOptions import LogsSeverity, PrintOption
+from .ILogger import ILogger
 
-
-class LogsSeverity(Enum):
-    Debug = 1
-    Regular = 0
-    WaningsAndErrors = 2
-    ErrorsOnly = 3
-    NoLogs = 4
-    InfoOnly = 5
-
-
-class PrintOption(Enum):
-    NoPrints = 0
-    PrintToConsole = 1
-
-
-class Logger:
+class Logger(ILogger):
     class LogType(Enum):
         info = 0
         debug = 1
@@ -118,6 +105,9 @@ class Logger:
 
     def new_line(self):
         self._loggerCall()
+        
+    def get_log_dir_and_name(self):
+        return self.log_dir_and_name
 
     def _loggerCall(self, log_type: LogType = LogType.newline, in_string=""):
         if self._is_in_severity(log_type) and self._is_str(in_string):
@@ -170,7 +160,7 @@ class Logger:
                 raise ValueError
             return False
 
-    def _get_str_for_timing_log(self, msg, time_offset: int) -> str:
+    def _get_str_for_timing_log(self, msg, time_offset: float) -> str:
         t = time.strftime("%H:%M:%S", time.localtime(msg.time))
         return (
             f"Capture time: {t},\tCapture offset: {msg.time-time_offset:.9f},\t"
@@ -185,9 +175,11 @@ class Logger:
     def _prepare_path(self) -> str:
         p = os.path.dirname(__file__)
         if os.name == "nt":
-            p = p[: p.rfind("\\")] + "\\reports\\"
+            tmp_p = p[: p.rfind("\\")] 
+            p = tmp_p[: tmp_p.rfind("\\")] + "\\reports\\"
         else:
-            p = p[: p.rfind("/")] + "/reports/"
+            tmp_p = p[: p.rfind("/")]
+            p = tmp_p[: tmp_p.rfind("/")] + "/reports/"
         return p
 
     def _print_strict(self, string: str):

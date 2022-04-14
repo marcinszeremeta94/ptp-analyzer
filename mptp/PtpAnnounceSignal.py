@@ -1,11 +1,11 @@
 from dataclasses import dataclass
 
-from mptp.Logger import Logger
+from appcommon.AppLogger.ILogger import ILogger
 from .PTPv2 import PTPv2, PtpType, PTP_MSG_TYPE
 
 
 class PtpAnnounceSignal:
-    def __init__(self, logger: Logger, time_offset=0):
+    def __init__(self, logger: ILogger, time_offset=0):
         self.time_offset = time_offset
         self._logger = logger
         self._announce_data = AnnounceData()

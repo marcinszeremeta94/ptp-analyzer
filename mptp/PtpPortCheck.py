@@ -1,4 +1,4 @@
-from mptp.Logger import Logger
+from appcommon.AppLogger.ILogger import ILogger
 from .PTPv2 import PTP_MSG_TYPE, PTPv2, PtpType
 
 
@@ -6,7 +6,7 @@ class PtpPortCheck:
 
     MINIMAL_MESSAGE_NUMBER_REQUIRED = 5
 
-    def __init__(self, logger: Logger, time_offset=0):
+    def __init__(self, logger: ILogger, time_offset=0.0):
         self._logger = logger
         self._inconsistency_counter = 0
         self.time_offset = time_offset

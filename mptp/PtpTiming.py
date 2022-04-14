@@ -1,4 +1,4 @@
-from mptp.Logger import Logger
+from appcommon.AppLogger.ILogger import ILogger
 from .PTPv2 import PTPv2, PtpType
 from enum import IntEnum
 import time
@@ -36,7 +36,7 @@ def rate_to_str(rate: MsgInterval) -> str:
 
 # This analysis makes sense for ptp msgs like announce, sync and follow-up
 class PtpTiming:
-    def __init__(self, logger: Logger, packets: list[PTPv2], timeOffset=0, interval=MsgInterval.Rate_16):
+    def __init__(self, logger: ILogger, packets: list[PTPv2], timeOffset=0, interval=MsgInterval.Rate_16):
         self._msgs = packets
         self._time_offset = timeOffset
         self._logger = logger

@@ -1,5 +1,5 @@
 import time
-from .Logger import Logger
+from appcommon.AppLogger.ILogger import ILogger
 from .PTPv2 import PTPv2, PtpType
 from .PtpTiming import PtpTiming
 from .PtpMatched import PtpMatched
@@ -9,9 +9,9 @@ from .PtpPortCheck import PtpPortCheck
 
 
 class PtpStream:
-    def __init__(self, logger: Logger, packets: list[PTPv2]):
+    def __init__(self, logger: ILogger, packets: list[PTPv2]):
         self._logger = logger
-        self.time_offset = 0
+        self.time_offset = 0.0
         self._packets = packets
         self._announce = []
         self._signalling = []
