@@ -1,85 +1,36 @@
 import time
-from appcommon.AppLogger.ILogger import ILogger
-from .PTPv2 import PTPv2, PtpType
-from .PtpTiming import PtpTiming
-from .PtpMatched import PtpMatched
-from .PtpSequenceId import PtpSequenceId
-from .PtpAnnounceSignal import PtpAnnounceSignal
-from .PtpPortCheck import PtpPortCheck
+from dataclasses import dataclass
+from mptp.PtpPacket.PTPv2 import PTPv2, PtpType
 
 
+@dataclass
 class PtpStream:
-    def __init__(self, logger: ILogger, packets: list[PTPv2]):
-        self._logger = logger
-        self.time_offset = 0.0
-        self._packets = packets
-        self._announce = []
-        self._signalling = []
-        self._sync = []
-        self._follow_up = []
-        self._delay_req = []
-        self._delay_resp = []
-        self._delay_resp_fup = []
-        self._other_ptp_msgs = []
-        self._ptp_msgs_total = []
+    def __init__(self, packets: list[PTPv2]):
+        self._time_offset: float = 0.0
+        self._pcap_start_date: float = 0.0 
+        self._packets: list[PTPv2] = packets
+        self._announce: list[PTPv2] = []
+        self._signalling: list[PTPv2] = []
+        self._sync: list[PTPv2] = []
+        self._follow_up: list[PTPv2] = []
+        self._delay_req: list[PTPv2] = []
+        self._delay_resp: list[PTPv2] = []
+        self._delay_resp_fup: list[PTPv2] = []
+        self._other_ptp_msgs: list[PTPv2] = []
+        self._ptp_msgs_total: list[PTPv2] = []
+        self._get_time_offset_from_packets(packets)
         self._add(self._cut_boundaries(packets))
-        self._logger.banner_small("counted messages")
-        self._logger.info(self.__repr__())
-
-    def analyse(self):
-        if len(self._ptp_msgs_total) == 0:
-            self._logger.error("PTP stream empty")
-            return
-        self.analyse_announce()
-        self.analyse_ports()
-        self.analyse_sequence_id()
-        self.analyse_timings()
-        self.analyse_if_stream_match_sequence_of_sync_dreq_dreq_pattern()
-
-    def analyse_announce(self):
-        self._announce_sig = PtpAnnounceSignal(self._logger, self.time_offset)
-        self._announce_sig.check_announce_consistency(self.announce)
-
-    def analyse_ports(self):
-        port_check = PtpPortCheck(self._logger, self.time_offset)
-        port_check.check_ports(self._ptp_msgs_total)
-
-    def analyse_sequence_id(self):
-        if len(self._ptp_msgs_total) == 0:
-            self._logger.error("PTP stream empty")
-            return
-        self._logger.banner_large("ptp messages sequence id analysis")
-        seq_check = PtpSequenceId(self._logger, self.time_offset)
-        seq_check.check_sync_followup_sequence(self.sync, self.follow_up)
-        seq_check.check_delay_req_resp_sequence(self.delay_req, self.delay_resp)
-        seq_check.check_dresp_dresp_fup_sequence(self.delay_resp, self.delay_resp_fup)
-
-    def analyse_timings(self):
-        if len(self._ptp_msgs_total) == 0:
-            self._logger.error("PTP stream empty")
-            return
-        self._logger.banner_large("ptp timing and rate")
-        self._announce_timing = PtpTiming(self._logger, self._announce, self.time_offset)
-        self._sync_timing = PtpTiming(self._logger, self._sync, self.time_offset)
-        self._followup_timing = PtpTiming(self._logger, self._follow_up, self.time_offset)
-
-    def analyse_if_stream_match_sequence_of_sync_dreq_dreq_pattern(self):
-        if len(self._sync) == 0:
-            self._logger.error("No PTP Sync messages")
-            return
-        self._sync_dreq_dresp_match = PtpMatched(self._logger, self._packets, self.time_offset)
 
     def _add(self, pkt: list[PTPv2]):
-        if len(pkt) > 0:
-            self._add_time_data(pkt)
-        else:
-            self._logger.info(f"Provided stream empty!")
-            return
         if type(pkt) == PTPv2:
             self._add_dispatch(pkt)
         elif iter(pkt):
             for p in pkt:
                 self._add_dispatch(p)
+
+    def _get_time_offset_from_packets(self, pkt):
+        if len(pkt) > 0:
+            self._add_time_data(pkt)
 
     def _add_dispatch(self, p: PTPv2):
         if PtpType.is_sync(p):
@@ -101,9 +52,8 @@ class PtpStream:
         self._ptp_msgs_total.append(p)
 
     def _add_time_data(self, pkt: PTPv2):
-        self.time_offset = pkt[0].time
-        self.pcap_start_date = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime(pkt[0].time))
-        self._logger.info(f"Pcap started at {self.pcap_start_date}")
+        self._time_offset = pkt[0].time
+        self._pcap_start_date = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime(pkt[0].time))
 
     @staticmethod
     def _cut_boundaries(raw_ptp_list: list[PTPv2]):
@@ -115,7 +65,9 @@ class PtpStream:
             else:
                 raw_ptp_list.remove(ptp_msg)
         for ptp_msg in reversed(raw_ptp_list):
-            if PtpType.is_delay_resp_followup(ptp_msg) or PtpType.is_delay_resp(ptp_msg):
+            if PtpType.is_delay_resp_followup(ptp_msg) or PtpType.is_delay_resp(
+                ptp_msg
+            ):
                 break
             else:
                 raw_ptp_list.remove(ptp_msg)
@@ -160,41 +112,14 @@ class PtpStream:
     @property
     def packets_total(self):
         return self._packets
-
+    
     @property
-    def announce_data(self):
-        if hasattr(self, "_announce_sig"):
-            self._announce_sig._announce_data
-        else:
-            None
-
+    def time_offset(self):
+        return self._time_offset
+    
     @property
-    def announce_timing(self):
-        if hasattr(self, "_announce_timing"):
-            self._announce_timing
-        else:
-            None
-
-    @property
-    def sync_timing(self):
-        if hasattr(self, "_sync_timing"):
-            self._sync_timing
-        else:
-            None
-
-    @property
-    def followup_timing(self):
-        if hasattr(self, "_followup_timing"):
-            self._followup_timing
-        else:
-            None
-
-    @property
-    def sync_dreq_dresp_matc(self):
-        if hasattr(self, "_sync_dreq_dresp_match"):
-            self._sync_dreq_dresp_match
-        else:
-            None
+    def stream_start_time(self):
+        return self._pcap_start_date
 
     def __repr__(self) -> str:
         return (

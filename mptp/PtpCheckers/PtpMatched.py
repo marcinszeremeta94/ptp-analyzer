@@ -4,7 +4,7 @@ import copy
 import statistics
 from dataclasses import dataclass
 from appcommon.AppLogger.ILogger import ILogger
-from .PTPv2 import PTPv2, PtpType
+from mptp.PtpPacket.PTPv2 import PTPv2, PtpType
 
 ONE_SEC_IN_NS = 1000000000
 ONE_SEC_IN_US = 1000000

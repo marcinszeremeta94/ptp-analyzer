@@ -1,4 +1,4 @@
-from .PTPv2 import PTPv2, PtpType
+from mptp.PtpPacket.PTPv2 import PTPv2, PtpType
 from appcommon.AppLogger.ILogger import ILogger
 
 

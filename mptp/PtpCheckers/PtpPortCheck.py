@@ -1,5 +1,5 @@
 from appcommon.AppLogger.ILogger import ILogger
-from .PTPv2 import PTP_MSG_TYPE, PTPv2, PtpType
+from mptp.PtpPacket.PTPv2 import PTP_MSG_TYPE, PTPv2, PtpType
 
 
 class PtpPortCheck:

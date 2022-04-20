@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 
 from appcommon.AppLogger.ILogger import ILogger
-from .PTPv2 import PTPv2, PtpType, PTP_MSG_TYPE
+from mptp.PtpPacket.PTPv2 import PTPv2, PtpType, PTP_MSG_TYPE
 
 
 class PtpAnnounceSignal:
