@@ -1,7 +1,7 @@
-from os import stat
 from mptp.PtpPacket.PTPv2 import PTPv2, PTP_MSG_TYPE
-from tests.testutils.DummyLogger import DummyLogger
 from mptp.PtpCheckers.PtpSequenceId import PtpSequenceId
+from tests.testutils.DummyLogger import DummyLogger
+from typing import List
 import unittest
 
 class PtpSequenceId_test(unittest.TestCase):
@@ -11,6 +11,9 @@ class PtpSequenceId_test(unittest.TestCase):
     
     def setUp(self):
         self.sut = PtpSequenceId(self.dummy_logger, self.dummy_time_offset)
+        
+    def test_object_creation(self):
+        self.assertNotEqual(None, self.sut)
     
     def test_is_cached_time_offset_correct(self):
         self.assertEqual(self.dummy_time_offset, self.sut.time_offset)
@@ -22,8 +25,8 @@ class PtpSequenceId_test(unittest.TestCase):
     
     @staticmethod  
     def create_ptp_sync_fup_test_data(n: int = 10):
-        sync: list[PTPv2] = []
-        fup: list[PTPv2] = []
+        sync: List[PTPv2] = []
+        fup: List[PTPv2] = []
         for i in range(0, n):
             sync.append(PTPv2())
             sync[-1].messageType = PTP_MSG_TYPE.SYNC_MSG.value

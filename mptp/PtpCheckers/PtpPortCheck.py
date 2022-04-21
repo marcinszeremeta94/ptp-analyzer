@@ -1,4 +1,5 @@
 from appcommon.AppLogger.ILogger import ILogger
+from typing import List
 from mptp.PtpPacket.PTPv2 import PTP_MSG_TYPE, PTPv2, PtpType
 
 
@@ -26,7 +27,7 @@ class PtpPortCheck:
         self._check_ports_for_ptp_messages_in_stream(ptp_stream)
         self._log_status()
 
-    def _check_ports_for_ptp_messages_in_stream(self, ptp_stream: list[PTPv2]):
+    def _check_ports_for_ptp_messages_in_stream(self, ptp_stream: List[PTPv2]):
         for msg in ptp_stream:
             msg_type = PtpType.get_ptp_msg_type(msg)
             if msg_type in (

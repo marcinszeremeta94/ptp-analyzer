@@ -1,4 +1,5 @@
 from mptp.PtpPacket.PTPv2 import PTPv2, PtpType
+from typing import List
 from appcommon.AppLogger.ILogger import ILogger
 
 
@@ -7,15 +8,15 @@ class PtpSequenceId:
         self._logger = logger
         self.time_offset = time_offset
 
-    def check_sync_followup_sequence(self, sync: list[PTPv2], followup: list[PTPv2]):
+    def check_sync_followup_sequence(self, sync: List[PTPv2], followup: List[PTPv2]):
         self._check_sync_sequence_correctness(sync)
         self._check_followup_sequence_correctness(sync, followup)
 
-    def check_delay_req_resp_sequence(self, dreq: list[PTPv2], dresp: list[PTPv2]):
+    def check_delay_req_resp_sequence(self, dreq: List[PTPv2], dresp: List[PTPv2]):
         self._check_delay_req_sequence_correctness(dreq, dresp)
         self._check_delay_resp_sequence_correctness(dreq, dresp)
 
-    def check_dresp_dresp_fup_sequence(self, dresp: list[PTPv2], dresp_fup: list[PTPv2]):
+    def check_dresp_dresp_fup_sequence(self, dresp: List[PTPv2], dresp_fup: List[PTPv2]):
         if len(dresp_fup) == 0:
             return
         self._logger.banner_small("delay request follow-up message sequence id")
@@ -25,14 +26,14 @@ class PtpSequenceId:
         if delay_resp_fup_correct:
             self._logger.info("Delay Resp Follow-up msg sequenceId: [OK]")
 
-    def _check_sync_sequence_correctness(self, sync: list[PTPv2]):
+    def _check_sync_sequence_correctness(self, sync: List[PTPv2]):
         if len(sync) == 0:
             return
         self._logger.banner_small("Sync message sequence id")
         if self._is_sequence_in_order(sync):
             self._logger.info("Sync msg sequenceId: [OK]")
 
-    def _check_followup_sequence_correctness(self, sync: list[PTPv2], followup: list[PTPv2]):
+    def _check_followup_sequence_correctness(self, sync: List[PTPv2], followup: List[PTPv2]):
         if len(followup) == 0:
             return
         self._logger.banner_small("Follow-up message sequence id")
@@ -42,7 +43,7 @@ class PtpSequenceId:
         if followup_correct:
             self._logger.info("Follow-up msg sequenceId: [OK]")
 
-    def _check_delay_req_sequence_correctness(self, dreq: list[PTPv2], dresp: list[PTPv2]):
+    def _check_delay_req_sequence_correctness(self, dreq: List[PTPv2], dresp: List[PTPv2]):
         if len(dreq) == 0:
             return
         self._logger.banner_small("delay request message sequence id")
@@ -51,7 +52,7 @@ class PtpSequenceId:
         if delay_req_correct:
             self._logger.info("Delay Req msg sequenceId: [OK]")
 
-    def _check_delay_resp_sequence_correctness(self, dreq: list[PTPv2], dresp: list[PTPv2]):
+    def _check_delay_resp_sequence_correctness(self, dreq: List[PTPv2], dresp: List[PTPv2]):
         if len(dresp) == 0:
             return
         self._logger.banner_small("delay resp message sequence id")
@@ -60,7 +61,7 @@ class PtpSequenceId:
         if delay_resp_correct:
             self._logger.info("Delay Resp msg sequenceId: [OK]")
 
-    def _is_same_len(self, arg1: list[PTPv2], arg2: list[PTPv2]) -> bool:
+    def _is_same_len(self, arg1: List[PTPv2], arg2: List[PTPv2]) -> bool:
         if len(arg1) != len(arg2):
             self._logger.info(
                 f"Number of {PtpType.get_ptp_type_str(arg1[0])} and"
@@ -69,7 +70,7 @@ class PtpSequenceId:
             return False
         return True
 
-    def _is_sequence_in_order(self, ptp_frames: list[PTPv2]) -> bool:
+    def _is_sequence_in_order(self, ptp_frames: List[PTPv2]) -> bool:
         SEQUENCE_ID_SATURATION_DIFF = -0xFFFE
         inconsistent_counter = 0
         for frame, next_frame in zip(ptp_frames[:-1], ptp_frames[1:]):
@@ -81,7 +82,7 @@ class PtpSequenceId:
             self._log_inconsistency(ptp_frames[0], inconsistent_counter)
         return inconsistent_counter == 0
 
-    def _is_sequence_in_superset(self, in_set: list[PTPv2], subset: list[PTPv2]) -> bool:
+    def _is_sequence_in_superset(self, in_set: List[PTPv2], subset: List[PTPv2]) -> bool:
         m_seq = set([msg.sequenceId for msg in in_set]) - set([msg.sequenceId for msg in subset])
         if len(m_seq) > 0:
             self._logger.info(

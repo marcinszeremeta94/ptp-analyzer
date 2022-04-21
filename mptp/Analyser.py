@@ -1,4 +1,6 @@
+import time
 from appcommon.AppLogger.ILogger import ILogger
+from appcommon.ConfigReader.ConfigReader import ConfigReader
 from mptp.PtpStream import PtpStream
 from mptp.PtpCheckers.PtpTiming import PtpTiming
 from mptp.PtpCheckers.PtpMatched import PtpMatched
@@ -8,9 +10,13 @@ from mptp.PtpCheckers.PtpPortCheck import PtpPortCheck
 
 
 class Analyser:
-    def __init__(self, logger: ILogger, ptp_stream: PtpStream):
+    def __init__(self, config: ConfigReader, logger: ILogger, ptp_stream: PtpStream):
         self._logger: ILogger = logger
+        self._config: ConfigReader = config
         self._ptp_stream: PtpStream = ptp_stream
+        if len(ptp_stream.ptp_total) > 0:
+            t = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime(ptp_stream.ptp_total[0].time))
+            self._logger.info(f"Pcap started at: {t}")
         self._logger.banner_small("counted messages")
         self._logger.info(self._ptp_stream.__repr__())
 
@@ -23,6 +29,8 @@ class Analyser:
         self.analyse_sequence_id()
         self.analyse_timings()
         self.analyse_if_stream_match_sequence_of_sync_dreq_dreq_pattern()
+        self._logger.banner_small("Finished")
+        self._logger.info("Done")
 
     def analyse_announce(self):
         self._announce_sig = PtpAnnounceSignal(self._logger, self._ptp_stream.time_offset)
@@ -47,9 +55,9 @@ class Analyser:
             self._logger.error("PTP stream empty")
             return
         self._logger.banner_large("ptp timing and rate")
-        self._announce_timing = PtpTiming(self._logger, self._ptp_stream.announce, self._ptp_stream.time_offset)
-        self._sync_timing = PtpTiming(self._logger, self._ptp_stream.sync, self._ptp_stream.time_offset)
-        self._followup_timing = PtpTiming(self._logger, self._ptp_stream.follow_up, self._ptp_stream.time_offset)
+        self._announce_timing = PtpTiming(self._logger, self._ptp_stream.announce, self._ptp_stream.time_offset, self._config.ptp_rate_err)
+        self._sync_timing = PtpTiming(self._logger, self._ptp_stream.sync, self._ptp_stream.time_offset, self._config.ptp_rate_err)
+        self._followup_timing = PtpTiming(self._logger, self._ptp_stream.follow_up, self._ptp_stream.time_offset, self._config.ptp_rate_err)
 
     def analyse_if_stream_match_sequence_of_sync_dreq_dreq_pattern(self):
         if len(self._ptp_stream.sync) == 0:

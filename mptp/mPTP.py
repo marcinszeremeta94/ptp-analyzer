@@ -1,6 +1,7 @@
 from scapy.utils import rdpcap
 
 from appcommon.AppLogger.ILogger import ILogger
+from appcommon.ConfigReader.ConfigReader import ConfigReader
 from .PtpStream import PtpStream
 from .Analyser import Analyser
 
@@ -9,8 +10,8 @@ def PcapToPtpStream(filename: str) -> PtpStream:
     return PtpStream(open_pcap_get_ptp(filename))
 
 
-def CreatePtpAnalyser(logger: ILogger, stream: PtpStream) -> Analyser:
-    return Analyser(logger, stream)
+def CreatePtpAnalyser(config: ConfigReader, logger: ILogger, stream: PtpStream) -> Analyser:
+    return Analyser(config, logger, stream)
 
 
 def open_pcap_get_ptp(filename: str):

@@ -1,27 +1,28 @@
 import time
 from dataclasses import dataclass
+from typing import List
 from mptp.PtpPacket.PTPv2 import PTPv2, PtpType
 
 
 @dataclass
 class PtpStream:
-    def __init__(self, packets: list[PTPv2]):
+    def __init__(self, packets: List[PTPv2]):
         self._time_offset: float = 0.0
         self._pcap_start_date: float = 0.0 
-        self._packets: list[PTPv2] = packets
-        self._announce: list[PTPv2] = []
-        self._signalling: list[PTPv2] = []
-        self._sync: list[PTPv2] = []
-        self._follow_up: list[PTPv2] = []
-        self._delay_req: list[PTPv2] = []
-        self._delay_resp: list[PTPv2] = []
-        self._delay_resp_fup: list[PTPv2] = []
-        self._other_ptp_msgs: list[PTPv2] = []
-        self._ptp_msgs_total: list[PTPv2] = []
+        self._packets: List[PTPv2] = packets
+        self._announce: List[PTPv2] = []
+        self._signalling: List[PTPv2] = []
+        self._sync: List[PTPv2] = []
+        self._follow_up: List[PTPv2] = []
+        self._delay_req: List[PTPv2] = []
+        self._delay_resp: List[PTPv2] = []
+        self._delay_resp_fup: List[PTPv2] = []
+        self._other_ptp_msgs: List[PTPv2] = []
+        self._ptp_msgs_total: List[PTPv2] = []
         self._get_time_offset_from_packets(packets)
         self._add(self._cut_boundaries(packets))
 
-    def _add(self, pkt: list[PTPv2]):
+    def _add(self, pkt: List[PTPv2]):
         if type(pkt) == PTPv2:
             self._add_dispatch(pkt)
         elif iter(pkt):
@@ -56,7 +57,7 @@ class PtpStream:
         self._pcap_start_date = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime(pkt[0].time))
 
     @staticmethod
-    def _cut_boundaries(raw_ptp_list: list[PTPv2]):
+    def _cut_boundaries(raw_ptp_list: List[PTPv2]):
         for ptp_msg in raw_ptp_list:
             if PtpType.is_sync(ptp_msg):
                 break

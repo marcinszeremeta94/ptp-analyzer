@@ -25,6 +25,25 @@ class TimestampField(BitField):
 class PortIdentityField(XStrFixedLenField):
     encoding = "!BBBBBBBBh"
 
+    @classmethod
+    def from_mac(cls, mac, port):
+        mac_bytes = mac.split(":")
+        if len(mac_bytes) != 6:
+            raise ValueError("Invalid MAC Address")
+
+        return struct.pack(
+            cls.encoding,
+            int(mac_bytes[0], 16),
+            int(mac_bytes[1], 16),
+            int(mac_bytes[2], 16),
+            0xFF,
+            0xFE,
+            int(mac_bytes[3], 16),
+            int(mac_bytes[4], 16),
+            int(mac_bytes[5], 16),
+            port,
+        )
+
     def __init__(self, name, default):
         XStrFixedLenField.__init__(self, name, default, length=10)
 
@@ -32,7 +51,9 @@ class PortIdentityField(XStrFixedLenField):
         if val is None:
             return "None"
         p = struct.unpack(self.encoding, val)
-        return (f"{p[0]:02x}:{p[1]:02x}:{p[2]:02x}:{p[5]:02x}:{p[6]:02x}:{p[7]:02x}/{p[8]}")
+        return (
+            f"{p[0]:02x}:{p[1]:02x}:{p[2]:02x}:{p[5]:02x}:{p[6]:02x}:{p[7]:02x}/{p[8]}"
+        )
 
     def i2repr(self, pkt, x):
         return self.i2h(pkt, x)

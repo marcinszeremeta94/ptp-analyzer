@@ -3,6 +3,7 @@ import time
 import copy
 import statistics
 from dataclasses import dataclass
+from typing import List
 from appcommon.AppLogger.ILogger import ILogger
 from mptp.PtpPacket.PTPv2 import PTPv2, PtpType
 
@@ -34,7 +35,7 @@ class PtpMatched:
         GOT_SYNC = 2
         WAITING_AT_RESP = 3
 
-    def __init__(self, logger: ILogger, packets: list[PTPv2], time_offset=0):
+    def __init__(self, logger: ILogger, packets: List[PTPv2], time_offset=0):
         self.time_offset = time_offset
         self._logger = logger
         self._ptp_msg_exchange = []
@@ -148,10 +149,10 @@ class PtpMatched:
 
     def _log_state(self):
         self._logger.info(self.__repr__())
-        self._logger.banner_small("Unordered ptp messages")
-        self._log_unordered_msgs()
         self._logger.banner_small("ptp message exchange statistics")
         self._log_statistics()
+        self._logger.banner_small("Unordered ptp messages")
+        self._log_unordered_msgs()
 
     def _log_statistics(self):
         sync_to_delay = [exchange.sync_to_delay_req_time for exchange in self._ptp_msg_exchange]

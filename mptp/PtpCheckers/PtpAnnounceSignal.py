@@ -1,6 +1,7 @@
 from dataclasses import dataclass
 
 from appcommon.AppLogger.ILogger import ILogger
+from typing import List
 from mptp.PtpPacket.PTPv2 import PTPv2, PtpType, PTP_MSG_TYPE
 
 
@@ -10,7 +11,7 @@ class PtpAnnounceSignal:
         self._logger = logger
         self._announce_data = AnnounceData()
 
-    def check_announce_consistency(self, announce: list[PTPv2]):
+    def check_announce_consistency(self, announce: List[PTPv2]):
         if not announce:
             self._logger.info("PTP Announce list empty.")
             return
@@ -22,7 +23,7 @@ class PtpAnnounceSignal:
         self._check_announce_stream_consistency(announce)
         self._logger.info(self.__repr__())
 
-    def _check_announce_stream_consistency(self, announce: list[PTPv2]):
+    def _check_announce_stream_consistency(self, announce: List[PTPv2]):
         inconsistent_counter = 0
         for msg in announce:
             if AnnounceData(msg) != self._announce_data:
@@ -35,7 +36,7 @@ class PtpAnnounceSignal:
         else:
             self._logger.info(f"PTP Announce stream: [OK]")
 
-    def _is_input_valid(self, msgs: list[PTPv2]) -> bool:
+    def _is_input_valid(self, msgs: List[PTPv2]) -> bool:
         for msg in msgs:
             if PtpType.get_ptp_msg_type(msg) != PTP_MSG_TYPE.ANNOUNCE_MSG:
                 return False

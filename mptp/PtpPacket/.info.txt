@@ -1,0 +1,2 @@
+# This directory contain extended files from on scapy-gptp
+https://github.com/weinshec/scapy-gptp

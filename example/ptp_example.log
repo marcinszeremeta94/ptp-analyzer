@@ -1,0 +1,81 @@
+============================================================================================================================================
+||                                                              PTP ANALYSER                                                              ||
+============================================================================================================================================
+[INF] Started at: 2022-04-28 02:18:43.727377
+[INF] Pcap started at: 2021-03-16 15:39:34
+[INF] PTP Filtered Messages:
+	Announce: 0,
+	Sync: 48,
+	Follow-up: 48, 
+	Delay Request: 6,
+	Delay Response: 6,
+	Delay Response Follow-up:6
+	Signalling: 0,
+	Other PTP Messages: 0
+	PTP Messages Total: 114
+[INF] PTP Announce list empty.
+============================================================================================================================================
+||                                             PTP MESSAGE MAC ADDRESS AND CLOCK ID ANALYSIS                                              ||
+============================================================================================================================================
+[INF] PTP Clock ID and MAC addresses: [OK]
+[INF] Last PTP MAC address and Clock ID data:
+	PTP Source MAC: 11:22:33:44:55:66,
+	PTP Slave MAC: 8c:16:45:9b:9e:11,
+	Destination for PTP Source MAC: 01:80:c2:00:00:0e - Multicast,
+	Destination for PTP Slave MAC: 01:80:c2:00:00:0e - Multicast,
+	Source Clock ID and Port: 11:22:33:44:55:66/6,
+	Requesting Clock ID and Port: 8c:16:45:9b:9e:11/1
+============================================================================================================================================
+||                                                   PTP MESSAGES SEQUENCE ID ANALYSIS                                                    ||
+============================================================================================================================================
+[INF] Sync msg sequenceId: [OK]
+[INF] Follow-up msg sequenceId: [OK]
+[INF] Delay Req msg sequenceId: [OK]
+[INF] Delay Resp msg sequenceId: [OK]
+[INF] Delay Resp Follow-up msg sequenceId: [OK]
+============================================================================================================================================
+||                                                          PTP TIMING AND RATE                                                           ||
+============================================================================================================================================
+[INF] Detected Rate: 8 messages per second of Sync
+[INF] Allowed Threshold: 2500000, what is 2.0% of msgs time difference
+[INF] Ptp Timing: not enough data
+[INF] Detected Rate: 8 messages per second of Follow-up
+[INF] Allowed Threshold: 2500000, what is 2.0% of msgs time difference
+[INF] Ptp Timing of Follow-up:
+Timestamps:
+	mean msg rate: 7.981935694,
+	std dev msg rate: 0.048682086, 
+	min msg rate: 7.819654312,
+	max msg rate: 8.046814953,
+	number of msgs with irregularity above the limit: 1
+Capture time
+	mean capture rate: 7.972490689,
+	std dev capture rate: 0.045075056, 
+	min capture rate: 7.804542354,
+	max capture rate: 8.008191804,
+	number of msgs captured with irregularity above the limit: 1
+
+============================================================================================================================================
+||                                             PTP ONE STEP FULL SEQUENTIAL MESSAGE EXCHANGE                                              ||
+============================================================================================================================================
+[INF] Ptp Signal Match 1-step Sequence:
+	Ptp Exchanges (Sync-D_Req-D_Resp): 6,
+	Discarded (unhandled) Sync Msgs: 42,
+	Discarded (unordered) Delay Reqs: 0,
+	Discarded (unordered) Delay Resps: 0,
+[INF] Sync message to Delay Request message capture time in matched PTP messages exchange:
+	mean: 60885.568 us,
+	std dev: 7398.054 us,
+	min: 51043.494us,
+	max: 70824.730 us
+[INF] Delay Request message to Delay Response message capture time in matched PTP messages  exchange:
+	mean: 1062.660 us,
+	std dev: 61.424 us,
+	min: 1019.765 us,
+	max: 1182.259 us
+[INF] 1st Timestamp to 4th Timestamp time difference in full PTP messages exchangeexchange:
+	mean: 867531.083 us,
+	std dev: 961.676 us,
+	min: 866890.813 us,
+	max: 869375.344 us
+[INF] Done

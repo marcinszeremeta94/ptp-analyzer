@@ -1,11 +1,12 @@
 import sys
 import re
+from typing import Tuple
 from appcommon.AppLogger import LoggerOptions
-from cmdapp.Utils import print_help, print_greeting
+from cmdapp.utils import print_help, print_greeting
 
 
-def dispatch_args() -> tuple[
-    str, LoggerOptions.LogsSeverity, LoggerOptions.PrintOption, tuple[str]
+def dispatch_args() -> Tuple[
+    str, LoggerOptions.LogsSeverity, LoggerOptions.PrintOption, Tuple[str]
 ]:
     if "--help" in sys.argv or "-h" in sys.argv:
         print_help()

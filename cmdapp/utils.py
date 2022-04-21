@@ -1,6 +1,6 @@
 import re
 import time
-from .Help import get_help
+from .help import get_help
 from appcommon.AppLogger import ILogger
 
 

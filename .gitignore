@@ -1,5 +1,8 @@
 __pycache__
 .vscode
 *.log
+!ptp_example.log
+!ptp_example_v.log
 *.pcap
-reports
+!ptp_example.pcap
+pcaps
