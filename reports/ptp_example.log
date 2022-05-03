@@ -1,0 +1,143 @@
+--------------------------------------------------------------------------------------------------------------------------------------------
+============================================================================================================================================
+||                                                              PTP ANALYSER                                                              ||
+============================================================================================================================================
+[INF] Started at: 2022-05-05 00:19:46.410310
+[INF] Pcap started at: 2021-03-16 15:39:34
+-----------------------------------------------------------   COUNTED MESSAGES   -----------------------------------------------------------
+[INF] PTP Filtered Messages:
+	Announce: 0,
+	Sync: 48,
+	Follow-up: 48, 
+	Delay Request: 6,
+	Delay Response: 6,
+	Delay Response Follow-up:6
+	Signalling: 0,
+	Other PTP Messages: 0
+	PTP Messages Total: 114
+[INF] PTP Announce list empty.
+============================================================================================================================================
+||                                             PTP MESSAGE MAC ADDRESS AND CLOCK ID ANALYSIS                                              ||
+============================================================================================================================================
+[INF] PTP Clock ID and MAC addresses: [OK]
+-----------------------------------------------------------PORT AND CLOCK ID ADDRESSES------------------------------------------------------
+[INF] Last PTP MAC address and Clock ID data:
+	PTP Source MAC: 11:22:33:44:55:66,
+	PTP Slave MAC: 8c:16:45:9b:9e:11,
+	Destination for PTP Source MAC: 01:80:c2:00:00:0e - Multicast,
+	Destination for PTP Slave MAC: 01:80:c2:00:00:0e - Multicast,
+	Source Clock ID and Port: 11:22:33:44:55:66/6,
+	Requesting Clock ID and Port: 8c:16:45:9b:9e:11/1
+============================================================================================================================================
+||                                                   PTP MESSAGES SEQUENCE ID ANALYSIS                                                    ||
+============================================================================================================================================
+-----------------------------------------------------------SYNC MESSAGE SEQUENCE ID---------------------------------------------------------
+[INF] Sync msg sequenceId: [OK]
+-----------------------------------------------------------FOLLOW-UP MESSAGE SEQUENCE ID----------------------------------------------------
+[INF] Follow-up msg sequenceId: [OK]
+-----------------------------------------------------------DELAY REQUEST MESSAGE SEQUENCE ID------------------------------------------------
+[INF] Delay Req msg sequenceId: [OK]
+-----------------------------------------------------------DELAY RESP MESSAGE SEQUENCE ID---------------------------------------------------
+[INF] Delay Resp msg sequenceId: [OK]
+-----------------------------------------------------------DELAY REQUEST FOLLOW-UP MESSAGE SEQUENCE ID--------------------------------------
+[INF] Delay Resp Follow-up msg sequenceId: [OK]
+============================================================================================================================================
+||                                                          PTP TIMING AND RATE                                                           ||
+============================================================================================================================================
+[INF] Detected Rate: 8 messages per second of Sync
+[INF] Allowed Threshold: 2500000, what is 2.0% of msgs time difference
+[WRN] Sync msg capture time is irregular with time difference above delta, msg rate: 7.822, Time diff: 127849942 ns, Time err: 2849.942 us
+[TIME] Capture time: 15:39:36,	Capture offset: 2.007119165,	Sequence ID: 50
+[WRN] Number of capture time irregularities of PTP_MSG_TYPE.SYNC_MSG: 1
+[INF] Ptp Timing: not enough data
+[INF] Detected Rate: 8 messages per second of Follow-up
+[INF] Allowed Threshold: 2500000, what is 2.0% of msgs time difference
+[WRN] Follow-up msg timestamp is irregular with time difference above delta, msg rate: 7.820, Time diff: 127882891 ns, Time err: 2882.891 us
+[TIME] Capture time: 15:39:36,	Capture offset: 2.012884650,	Sequence ID: 50
+[WRN] Number of timestamp time irregularities of PTP_MSG_TYPE.FOLLOW_UP_MSG: 1
+[WRN] Follow-up msg capture time is irregular with time difference above delta, msg rate: 7.805, Time diff: 128130511 ns, Time err: 3130.511 us
+[TIME] Capture time: 15:39:36,	Capture offset: 2.012884650,	Sequence ID: 50
+[WRN] Number of capture time irregularities of PTP_MSG_TYPE.FOLLOW_UP_MSG: 1
+[INF] Ptp Timing of Follow-up:
+Timestamps:
+	mean msg rate: 7.981935694,
+	std dev msg rate: 0.048682086, 
+	min msg rate: 7.819654312,
+	max msg rate: 8.046814953,
+	number of msgs with irregularity above the limit: 1
+Capture time
+	mean capture rate: 7.972490689,
+	std dev capture rate: 0.045075056, 
+	min capture rate: 7.804542354,
+	max capture rate: 8.008191804,
+	number of msgs captured with irregularity above the limit: 1
+
+============================================================================================================================================
+||                                             PTP ONE STEP FULL SEQUENTIAL MESSAGE EXCHANGE                                              ||
+============================================================================================================================================
+[INF] Ptp Signal Match 1-step Sequence:
+	Ptp Exchanges (Sync-D_Req-D_Resp): 6,
+	Discarded (unhandled) Sync Msgs: 42,
+	Discarded (unordered) Delay Reqs: 0,
+	Discarded (unordered) Delay Resps: 0,
+-----------------------------------------------------------PTP MESSAGE EXCHANGE STATISTICS--------------------------------------------------
+[INF] Sync message to Delay Request message capture time in matched PTP messages exchange:
+	mean: 60885.568 us,
+	std dev: 7398.054 us,
+	min: 51043.494us,
+	max: 70824.730 us
+[INF] Delay Request message to Delay Response message capture time in matched PTP messages  exchange:
+	mean: 1062.660 us,
+	std dev: 61.424 us,
+	min: 1019.765 us,
+	max: 1182.259 us
+[INF] 1st Timestamp to 4th Timestamp time difference in full PTP messages exchangeexchange:
+	mean: 867531.083 us,
+	std dev: 961.676 us,
+	min: 866890.813 us,
+	max: 869375.344 us
+-----------------------------------------------------------UNORDERED PTP MESSAGES-----------------------------------------------------------
+[WRN] Unhandled SYNC__MSG:   Capture time: 15:39:34,    Capture offset: 0.000000000,	Sequence ID: 34
+[WRN] Unhandled SYNC__MSG:   Capture time: 15:39:34,    Capture offset: 0.125002557,	Sequence ID: 35
+[WRN] Unhandled SYNC__MSG:   Capture time: 15:39:34,    Capture offset: 0.250010964,	Sequence ID: 36
+[WRN] Unhandled SYNC__MSG:   Capture time: 15:39:34,    Capture offset: 0.375029564,	Sequence ID: 37
+[WRN] Unhandled SYNC__MSG:   Capture time: 15:39:34,    Capture offset: 0.499984717,	Sequence ID: 38
+[WRN] Unhandled SYNC__MSG:   Capture time: 15:39:34,    Capture offset: 0.625105433,	Sequence ID: 39
+[WRN] Unhandled SYNC__MSG:   Capture time: 15:39:35,    Capture offset: 0.749998133,	Sequence ID: 40
+[WRN] Unhandled SYNC__MSG:   Capture time: 15:39:35,    Capture offset: 1.001091235,	Sequence ID: 42
+[WRN] Unhandled SYNC__MSG:   Capture time: 15:39:35,    Capture offset: 1.128169335,	Sequence ID: 43
+[WRN] Unhandled SYNC__MSG:   Capture time: 15:39:35,    Capture offset: 1.253064015,	Sequence ID: 44
+[WRN] Unhandled SYNC__MSG:   Capture time: 15:39:35,    Capture offset: 1.379127870,	Sequence ID: 45
+[WRN] Unhandled SYNC__MSG:   Capture time: 15:39:35,    Capture offset: 1.504063683,	Sequence ID: 46
+[WRN] Unhandled SYNC__MSG:   Capture time: 15:39:35,    Capture offset: 1.629270753,	Sequence ID: 47
+[WRN] Unhandled SYNC__MSG:   Capture time: 15:39:36,    Capture offset: 1.754112168,	Sequence ID: 48
+[WRN] Unhandled SYNC__MSG:   Capture time: 15:39:36,    Capture offset: 2.007119165,	Sequence ID: 50
+[WRN] Unhandled SYNC__MSG:   Capture time: 15:39:36,    Capture offset: 2.132166271,	Sequence ID: 51
+[WRN] Unhandled SYNC__MSG:   Capture time: 15:39:36,    Capture offset: 2.257264183,	Sequence ID: 52
+[WRN] Unhandled SYNC__MSG:   Capture time: 15:39:36,    Capture offset: 2.382165157,	Sequence ID: 53
+[WRN] Unhandled SYNC__MSG:   Capture time: 15:39:36,    Capture offset: 2.508135081,	Sequence ID: 54
+[WRN] Unhandled SYNC__MSG:   Capture time: 15:39:36,    Capture offset: 2.633366661,	Sequence ID: 55
+[WRN] Unhandled SYNC__MSG:   Capture time: 15:39:37,    Capture offset: 2.758206699,	Sequence ID: 56
+[WRN] Unhandled SYNC__MSG:   Capture time: 15:39:37,    Capture offset: 3.009226488,	Sequence ID: 58
+[WRN] Unhandled SYNC__MSG:   Capture time: 15:39:37,    Capture offset: 3.135324092,	Sequence ID: 59
+[WRN] Unhandled SYNC__MSG:   Capture time: 15:39:37,    Capture offset: 3.260330719,	Sequence ID: 60
+[WRN] Unhandled SYNC__MSG:   Capture time: 15:39:37,    Capture offset: 3.385357033,	Sequence ID: 61
+[WRN] Unhandled SYNC__MSG:   Capture time: 15:39:37,    Capture offset: 3.510217318,	Sequence ID: 62
+[WRN] Unhandled SYNC__MSG:   Capture time: 15:39:37,    Capture offset: 3.635373675,	Sequence ID: 63
+[WRN] Unhandled SYNC__MSG:   Capture time: 15:39:38,    Capture offset: 3.761263841,	Sequence ID: 64
+[WRN] Unhandled SYNC__MSG:   Capture time: 15:39:38,    Capture offset: 4.012366652,	Sequence ID: 66
+[WRN] Unhandled SYNC__MSG:   Capture time: 15:39:38,    Capture offset: 4.137417784,	Sequence ID: 67
+[WRN] Unhandled SYNC__MSG:   Capture time: 15:39:38,    Capture offset: 4.263502849,	Sequence ID: 68
+[WRN] Unhandled SYNC__MSG:   Capture time: 15:39:38,    Capture offset: 4.389320963,	Sequence ID: 69
+[WRN] Unhandled SYNC__MSG:   Capture time: 15:39:38,    Capture offset: 4.515323971,	Sequence ID: 70
+[WRN] Unhandled SYNC__MSG:   Capture time: 15:39:38,    Capture offset: 4.640294147,	Sequence ID: 71
+[WRN] Unhandled SYNC__MSG:   Capture time: 15:39:39,    Capture offset: 4.766453479,	Sequence ID: 72
+[WRN] Unhandled SYNC__MSG:   Capture time: 15:39:39,    Capture offset: 5.018315740,	Sequence ID: 74
+[WRN] Unhandled SYNC__MSG:   Capture time: 15:39:39,    Capture offset: 5.145355773,	Sequence ID: 75
+[WRN] Unhandled SYNC__MSG:   Capture time: 15:39:39,    Capture offset: 5.270433930,	Sequence ID: 76
+[WRN] Unhandled SYNC__MSG:   Capture time: 15:39:39,    Capture offset: 5.395394991,	Sequence ID: 77
+[WRN] Unhandled SYNC__MSG:   Capture time: 15:39:39,    Capture offset: 5.520541028,	Sequence ID: 78
+[WRN] Unhandled SYNC__MSG:   Capture time: 15:39:39,    Capture offset: 5.645389781,	Sequence ID: 79
+[WRN] Unhandled SYNC__MSG:   Capture time: 15:39:40,    Capture offset: 5.770423779,	Sequence ID: 80
+-----------------------------------------------------------       FINISHED       -----------------------------------------------------------
+[INF] Done

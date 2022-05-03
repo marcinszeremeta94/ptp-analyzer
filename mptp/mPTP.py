@@ -18,7 +18,7 @@ def open_pcap_get_ptp(filename: str):
     try:
         pcap = rdpcap(filename)
     except FileNotFoundError:
-        print("Provided file is invalid!")
+        print("Provided file is invalid or does not exist!")
         quit()
     raw_ptp_list = [p for p in pcap if p.haslayer("PTPv2")]
     return raw_ptp_list

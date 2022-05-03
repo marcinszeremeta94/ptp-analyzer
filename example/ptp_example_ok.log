@@ -1,0 +1,108 @@
+--------------------------------------------------------------------------------------------------------------------------------------------
+============================================================================================================================================
+||                                                              PTP ANALYSER                                                              ||
+============================================================================================================================================
+[INF] Started at: 2022-05-05 00:19:07.590827
+[INF] Pcap started at: 2022-04-04 18:54:37
+-----------------------------------------------------------   COUNTED MESSAGES   -----------------------------------------------------------
+[INF] PTP Filtered Messages:
+	Announce: 557,
+	Sync: 1114,
+	Follow-up: 0, 
+	Delay Request: 1114,
+	Delay Response: 1114,
+	Delay Response Follow-up:0
+	Signalling: 0,
+	Other PTP Messages: 0
+	PTP Messages Total: 3899
+============================================================================================================================================
+||                                                              PTP ANNOUNCE                                                              ||
+============================================================================================================================================
+[INF] PTP Announce stream: [OK]
+[INF] PTP signal source data from announce msg:
+	Clock ID: 03:0F:D5:A1:42:06/1,
+	UTC Offset: 0,
+	priority1: 128,
+	grandmasterClockClass: 6,
+	grandmasterClockAccuracy: 100ns,
+	grandmasterClockVariance: 128,
+	priority2: 0,
+	grandmasterClockIdentity: 0x0000000000000000,
+	localStepsRemoved: 0,
+	TimeSource: Unknown
+============================================================================================================================================
+||                                                   PTP MESSAGES SEQUENCE ID ANALYSIS                                                    ||
+============================================================================================================================================
+-----------------------------------------------------------SYNC MESSAGE SEQUENCE ID---------------------------------------------------------
+[INF] Sync msg sequenceId: [OK]
+-----------------------------------------------------------DELAY REQUEST MESSAGE SEQUENCE ID------------------------------------------------
+[INF] Delay Req msg sequenceId: [OK]
+-----------------------------------------------------------DELAY RESP MESSAGE SEQUENCE ID---------------------------------------------------
+[INF] Delay Resp msg sequenceId: [OK]
+============================================================================================================================================
+||                                                          PTP TIMING AND RATE                                                           ||
+============================================================================================================================================
+[INF] Detected Rate: 8 messages per second of Announce
+[INF] Allowed Threshold: 2500000, what is 2.0% of msgs time difference
+[INF] All PTP_MSG_TYPE.ANNOUNCE_MSG msgs within threshold. Timestamp regularity: OK
+[INF] All PTP_MSG_TYPE.ANNOUNCE_MSG msgs within threshold. Capture time regularity: OK
+[INF] Ptp Timing of Announce:
+Timestamps:
+	mean msg rate: 8.000002557,
+	std dev msg rate: 0.003736449, 
+	min msg rate: 7.991087700,
+	max msg rate: 8.008082269,
+	number of msgs with irregularity above the limit: 0
+Capture time
+	mean capture rate: 8.000017287,
+	std dev capture rate: 0.005363554, 
+	min capture rate: 7.967937021,
+	max capture rate: 8.033935343,
+	number of msgs captured with irregularity above the limit: 0
+
+[INF] Detected Rate: 16 messages per second of Sync
+[INF] Allowed Threshold: 1250000, what is 2.0% of msgs time difference
+[INF] All PTP_MSG_TYPE.SYNC_MSG msgs within threshold. Timestamp regularity: OK
+[INF] All PTP_MSG_TYPE.SYNC_MSG msgs within threshold. Capture time regularity: OK
+[INF] Ptp Timing of Sync:
+Timestamps:
+	mean msg rate: 16.000010170,
+	std dev msg rate: 0.015264494, 
+	min msg rate: 15.966594308,
+	max msg rate: 16.029721926,
+	number of msgs with irregularity above the limit: 0
+Capture time
+	mean capture rate: 16.000011829,
+	std dev capture rate: 0.017211379, 
+	min capture rate: 15.844094114,
+	max capture rate: 16.142310610,
+	number of msgs captured with irregularity above the limit: 0
+
+============================================================================================================================================
+||                                             PTP ONE STEP FULL SEQUENTIAL MESSAGE EXCHANGE                                              ||
+============================================================================================================================================
+[INF] Ptp Signal Match 1-step Sequence:
+	Ptp Exchanges (Sync-D_Req-D_Resp): 1114,
+	Discarded (unhandled) Sync Msgs: 0,
+	Discarded (unordered) Delay Reqs: 0,
+	Discarded (unordered) Delay Resps: 0,
+-----------------------------------------------------------PTP MESSAGE EXCHANGE STATISTICS--------------------------------------------------
+[INF] Sync message to Delay Request message capture time in matched PTP messages exchange:
+	mean: 533.876 us,
+	std dev: 1275.595 us,
+	min: 201.000us,
+	max: 18633.000 us
+[INF] Delay Request message to Delay Response message capture time in matched PTP messages  exchange:
+	mean: 195.254 us,
+	std dev: 72.456 us,
+	min: 70.000 us,
+	max: 811.000 us
+[INF] 1st Timestamp to 4th Timestamp time difference in full PTP messages exchangeexchange:
+	mean: 586.310 us,
+	std dev: 1285.088 us,
+	min: 231.504 us,
+	max: 18707.952 us
+-----------------------------------------------------------UNORDERED PTP MESSAGES-----------------------------------------------------------
+[INF] There are no unordered messages
+-----------------------------------------------------------       FINISHED       -----------------------------------------------------------
+[INF] Done

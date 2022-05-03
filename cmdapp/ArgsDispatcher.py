@@ -20,6 +20,7 @@ def dispatch_args() -> Tuple[
         quit()
     log_severity = LoggerOptions.LogsSeverity.InfoOnly
     print_option = LoggerOptions.PrintOption.PrintToConsole
+    plotter_off = False
     for a in sys.argv[2:]:
         if a in ("-v", "--verbose"):
             log_severity = LoggerOptions.LogsSeverity.Regular
@@ -29,6 +30,8 @@ def dispatch_args() -> Tuple[
             log_severity = LoggerOptions.LogsSeverity.Debug
         elif a in ("--no-prints", "-p"):
             print_option = LoggerOptions.PrintOption.NoPrints
+        elif a in ("--no-plots", "-t"):
+            plotter_off = True
         elif a in (
             "--full",
             "--announce",
@@ -50,4 +53,4 @@ def dispatch_args() -> Tuple[
         print("Wrong file name format provided")
         quit()
     print_greeting()
-    return (file_path, log_severity, print_option, analyse_depth)
+    return (file_path, log_severity, print_option, analyse_depth, plotter_off)

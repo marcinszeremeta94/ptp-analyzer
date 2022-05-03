@@ -206,7 +206,7 @@ class PtpMatched:
 
     def __repr__(self) -> str:
         return (
-            f"Ptp Signal Match 1-step Sequence:\n\tPtp Exchanges (Sync-D_Req-D_Resp): "
+            f"PTP Signal Match 1-step Sequence:\n\tPTP Exchanges (Sync-D_Req-D_Resp): "
             f"{len(self._ptp_msg_exchange)},\n\tDiscarded (unhandled) Sync Msgs: "
             f"{len(self._unmatched_syncs)},\n\tDiscarded (unordered) Delay Reqs: "
             f"{len(self._unmatched_delay_reqs)},\n\tDiscarded (unordered) Delay Resps: "

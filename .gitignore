@@ -3,6 +3,11 @@ __pycache__
 *.log
 !ptp_example.log
 !ptp_example_v.log
+!ptp_example_ok.log
 *.pcap
 !ptp_example.pcap
 pcaps
+*.png
+!ptp_example.png
+!ptp_example_ok.png
+!ptp_example_nok.png

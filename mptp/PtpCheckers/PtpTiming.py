@@ -35,6 +35,7 @@ def rate_to_str(rate: MsgInterval) -> str:
 class PtpTiming:
     def __init__(self, logger: ILogger, packets: List[PTPv2], time_offset=0, ptp_rate_err = 0.01):
         if len(packets) == 0:
+            self._msgs = []
             return
         self._msgs = packets
         self._time_offset = time_offset

@@ -1,8 +1,4 @@
 personal list for future possible improvements:
 1. Architecture - Now it is script transformed to app. MVC, testability and extendability
-2. UT, MT, coverage
-3. Possibility to analyze PTP "in fly"
-4. Full 2-step support
-5. Full ptp clocks type support
-6. Plotting
+2. Tests
 7. GUI

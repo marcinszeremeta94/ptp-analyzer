@@ -15,9 +15,11 @@ def main():
         log_severity,
         print_option,
         analyse_depth,
+        plotter_off,
     ) = dispatcher.dispatch_args()
 
     config = ConfigReader()
+    config.plotter_off = plotter_off
     logger = Logger(apputils.get_file_name_from_path(file_path), log_severity, print_option)
     ptp = mPTP.PcapToPtpStream(file_path)
     analyzer = mPTP.CreatePtpAnalyser(config, logger, ptp)

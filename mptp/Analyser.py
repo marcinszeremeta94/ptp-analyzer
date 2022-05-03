@@ -1,5 +1,6 @@
 import time
 from appcommon.AppLogger.ILogger import ILogger
+from appcommon.Plotter.Plotter import Plotter
 from appcommon.ConfigReader.ConfigReader import ConfigReader
 from mptp.PtpStream import PtpStream
 from mptp.PtpCheckers.PtpTiming import PtpTiming
@@ -12,6 +13,7 @@ from mptp.PtpCheckers.PtpPortCheck import PtpPortCheck
 class Analyser:
     def __init__(self, config: ConfigReader, logger: ILogger, ptp_stream: PtpStream):
         self._logger: ILogger = logger
+        self._plotter = Plotter(config.plotter_off, logger.get_log_dir_and_name())
         self._config: ConfigReader = config
         self._ptp_stream: PtpStream = ptp_stream
         if len(ptp_stream.ptp_total) > 0:
@@ -58,6 +60,7 @@ class Analyser:
         self._announce_timing = PtpTiming(self._logger, self._ptp_stream.announce, self._ptp_stream.time_offset, self._config.ptp_rate_err)
         self._sync_timing = PtpTiming(self._logger, self._ptp_stream.sync, self._ptp_stream.time_offset, self._config.ptp_rate_err)
         self._followup_timing = PtpTiming(self._logger, self._ptp_stream.follow_up, self._ptp_stream.time_offset, self._config.ptp_rate_err)
+        self._plotter.plot_timings(self._announce_timing, self._sync_timing, self._followup_timing)
 
     def analyse_if_stream_match_sequence_of_sync_dreq_dreq_pattern(self):
         if len(self._ptp_stream.sync) == 0:

@@ -2,6 +2,8 @@ import json
 import os
 
 class ConfigReader:
+    plotter_off = False
+    
     def __init__(self):
         self._ptp_rate_err = self.get_allowed_relative_ptp_rate_error()
         
