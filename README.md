@@ -66,7 +66,8 @@ as DEFAULT in argument list below. Order of options does not matter, however
 if more than one option impact the same functionality last one is taken.
 Analysis depth arguments adds up.
 Analysis reports are stored in <Ptp Analyser Path>/reports/ as .log files 
-named same as provided pcap file. If file exist will be overwritten!
+named same as provided pcap file same as plots with .png extention. 
+**If file exist will be overwritten!**
 
         OPTIONS:
         -v or --verbose - More logging and printing, all warnings and wrong frames appear time
