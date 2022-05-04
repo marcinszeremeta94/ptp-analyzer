@@ -62,6 +62,7 @@ class PTPv2(Packet):
         0x30: "10s",
         0x31: ">10s",
         0xFE: "unknown",
+        0x80: "Internal Profile",
     }
 
     TIME_SOURCE = {
@@ -73,6 +74,7 @@ class PTPv2(Packet):
         0x60: "HandSet",
         0x90: "Other",
         0xA0: "InternalOscillator",
+        0x0A: "Unknown",
     }
 
     FLAGS = [
