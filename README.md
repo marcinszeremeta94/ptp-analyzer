@@ -2,7 +2,7 @@
 
 **Tool providing complex reports with analysis of PTPv2 over Ethernet signal from pcap files**
 
-_See example reports in examples_
+_See examples below or in examples directory_
 
 Analysis provide:
 1. Checking amount of particular PTP packet type
