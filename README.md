@@ -23,7 +23,7 @@ Should work under Windows and Linux
 ## Motivation
 I needed a script to quickly analyse pcaps from several ports (ordinary clock) from tcpdump running for 1-2 minutes for some time.
 This need turned out into this script/app, and grew along with my analysis so architecture might be not as noble as might be. 
-However, after all works perfect for finding issues between master clock and boundry clock in terms off timing or queue stuck.
+However, after all works perfect for finding issues between master clock and boundry clock in terms of timing or queue stuck.
 
 ## Requirements
 Python 3.7+ `scapy[basic]`, and `matplotlib`
